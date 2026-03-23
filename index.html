@@ -104,8 +104,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 1rem;
       margin-bottom: 1.2rem;
+      flex-wrap: wrap;
     }
     .nav-btn {
       background: var(--surface);
@@ -118,15 +119,33 @@
       display: flex; align-items: center; justify-content: center;
       transition: all 0.2s;
       box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
     }
     .nav-btn:hover { background: var(--primary); color: #fff; }
-    .month-title {
+    .month-selects {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-select {
       font-family: 'Shippori Mincho', serif;
-      font-size: 1.5rem;
+      font-size: 1.1rem;
       color: var(--primary);
-      min-width: 170px;
-      text-align: center;
-      letter-spacing: 0.05em;
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      padding: 0.3rem 0.6rem;
+      background: var(--surface);
+      cursor: pointer;
+      outline: none;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s;
+    }
+    .nav-select:focus { border-color: var(--accent); }
+    .nav-select-label {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.1rem;
+      color: var(--primary);
+      font-weight: 600;
     }
 
     /* ===== CALENDAR ===== */
@@ -160,7 +179,7 @@
     }
     .day-cell {
       background: var(--surface);
-      min-height: 108px;
+      min-height: clamp(72px, 10vw, 108px);
       padding: 0.45rem 0.4rem 0.5rem;
       position: relative;
       transition: background 0.15s;
@@ -191,7 +210,7 @@
     /* Event chips */
     .event-chip {
       display: block;
-      font-size: 0.68rem;
+      font-size: clamp(0.58rem, 1.1vw, 0.68rem);
       padding: 2px 6px;
       border-radius: 5px;
       margin-top: 3px;
@@ -430,7 +449,17 @@
 <div class="wrap">
   <div class="month-nav">
     <button class="nav-btn" id="prevBtn">&#8249;</button>
-    <div class="month-title" id="monthTitle">―</div>
+    <div class="month-selects">
+      <select class="nav-select" id="yearSelect"></select>
+      <span class="nav-select-label">年</span>
+      <select class="nav-select" id="monthSelect">
+        <option value="0">1月</option><option value="1">2月</option><option value="2">3月</option>
+        <option value="3">4月</option><option value="4">5月</option><option value="5">6月</option>
+        <option value="6">7月</option><option value="7">8月</option><option value="8">9月</option>
+        <option value="9">10月</option><option value="10">11月</option><option value="11">12月</option>
+      </select>
+      <span class="nav-select-label">月</span>
+    </div>
     <button class="nav-btn" id="nextBtn">&#8250;</button>
   </div>
   <div class="calendar" id="calendar">
@@ -566,11 +595,26 @@ function getEventsForDay(y, m, d) {
   });
 }
 
+// ---- 年セレクト初期化 ----
+function initYearSelect() {
+  const sel = document.getElementById('yearSelect');
+  sel.innerHTML = '';
+  for (let y = now.getFullYear() - 1; y <= now.getFullYear() + 3; y++) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    sel.appendChild(opt);
+  }
+}
+initYearSelect();
+
 // ---- カレンダー描画 ----
 function renderCalendar() {
-  const cal     = document.getElementById('calendar');
-  const titleEl = document.getElementById('monthTitle');
-  titleEl.textContent = `${currentYear}年 ${currentMonth + 1}月`;
+  // セレクトボックスを同期
+  document.getElementById('yearSelect').value  = currentYear;
+  document.getElementById('monthSelect').value = currentMonth;
+
+  const cal = document.getElementById('calendar');
 
   const firstDow = new Date(currentYear, currentMonth, 1).getDay();
   const lastDate  = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -682,12 +726,20 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 // ---- 月ナビ ----
 document.getElementById('prevBtn').addEventListener('click', () => {
   currentMonth--;
-  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; initYearSelect(); }
   renderCalendar();
 });
 document.getElementById('nextBtn').addEventListener('click', () => {
   currentMonth++;
-  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; initYearSelect(); }
+  renderCalendar();
+});
+document.getElementById('yearSelect').addEventListener('change', e => {
+  currentYear = parseInt(e.target.value);
+  renderCalendar();
+});
+document.getElementById('monthSelect').addEventListener('change', e => {
+  currentMonth = parseInt(e.target.value);
   renderCalendar();
 });
 </script>
