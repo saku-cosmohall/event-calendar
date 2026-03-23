@@ -758,12 +758,12 @@ function openModal(idx) {
   const catColor = CAT_COLORS[ev.cat] || CAT_COLORS[0];
 
   content.innerHTML = `
-    <div class="modal-flyer-wrap">
+    <div class="modal-flyer-wrap" id="flyerWrap">
       ${imgUrl
-        ? `<img class="modal-flyer" src="${imgUrl}" alt="${ev.name}のチラシ"
-              onerror="this.parentElement.innerHTML='<div class=\\"modal-flyer-placeholder\\"><span>🎪</span><p>チラシ画像を準備中</p></div>'">`
+        ? `<img class="modal-flyer" id="flyerImg" src="${imgUrl}" alt="${ev.name}のチラシ">`
         : `<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシなし</p></div>`}
-    </div>
+    </div>`;
+  content.innerHTML += `
     <div class="modal-cat-badge" style="background:${catColor}">${catName}</div>
     <h2 class="modal-title">${ev.name}</h2>
     <div class="modal-info-list">
@@ -777,6 +777,17 @@ function openModal(idx) {
         <a class="btn-primary" href="${ev.url}" target="_blank" rel="noopener">🎟 申込・詳細はこちら</a>
       </div>` : '<div style="height:1.4rem"></div>'}
   `;
+
+  // 画像読み込みエラー時の処理
+  if (imgUrl) {
+    const flyerImg = document.getElementById('flyerImg');
+    if (flyerImg) {
+      flyerImg.addEventListener('error', () => {
+        document.getElementById('flyerWrap').innerHTML =
+          '<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシなし</p></div>';
+      });
+    }
+  }
 
   document.getElementById('modalOverlay').classList.add('open');
   document.getElementById('modal').scrollTop = 0;
