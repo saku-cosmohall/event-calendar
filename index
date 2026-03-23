@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>イベントカレンダー</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f3ee;
+      --surface: #ffffff;
+      --primary: #1b3a5c;
+      --primary-mid: #254e7a;
+      --accent: #c8954a;
+      --accent2: #e6b36a;
+      --text: #2c2c2c;
+      --muted: #999;
+      --border: #dedad2;
+      --today-ring: #c8954a;
+      --sun: #c94040;
+      --sat: #3a72b5;
+      --shadow-sm: 0 2px 10px rgba(0,0,0,0.06);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.12);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.2);
+      --radius: 16px;
+
+      /* イベントカテゴリカラー */
+      --cat0: #3b6ea5;   /* 音楽 */
+      --cat1: #c8954a;   /* 演劇・ダンス */
+      --cat2: #5a8c5a;   /* 講座・ワークショップ */
+      --cat3: #9a5a8c;   /* 展示・その他 */
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 2.5rem 1rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(200,149,74,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    header h1 {
+      font-family: 'Shippori Mincho', serif;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      letter-spacing: 0.12em;
+      position: relative;
+    }
+    header p {
+      font-size: 0.82rem;
+      opacity: 0.65;
+      margin-top: 0.4rem;
+      letter-spacing: 0.05em;
+      position: relative;
+    }
+
+    /* ===== LEGEND ===== */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.2rem;
+      justify-content: center;
+      padding: 0.9rem 1rem;
+      background: var(--primary-mid);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.85);
+    }
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 3px;
+    }
+
+    /* ===== CALENDAR WRAP ===== */
+    .wrap {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* ===== MONTH NAV ===== */
+    .month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .nav-btn {
+      background: var(--surface);
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-btn:hover { background: var(--primary); color: #fff; }
+    .month-title {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.5rem;
+      color: var(--primary);
+      min-width: 170px;
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+
+    /* ===== CALENDAR ===== */
+    .calendar {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .day-headers {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: var(--primary);
+    }
+    .day-header {
+      padding: 0.7rem 0.4rem;
+      text-align: center;
+      color: rgba(255,255,255,0.9);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+    .day-header:first-child { color: #ffaaaa; }
+    .day-header:last-child  { color: #aaccff; }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+    .day-cell {
+      background: var(--surface);
+      min-height: 108px;
+      padding: 0.45rem 0.4rem 0.5rem;
+      position: relative;
+      transition: background 0.15s;
+    }
+    .day-cell.other-month { background: #f9f8f5; }
+    .day-cell.other-month .day-num { opacity: 0.3; }
+    .day-cell.today { background: #fff8ef; }
+
+    .day-num {
+      font-size: 0.82rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      line-height: 1;
+    }
+    .day-cell.today .day-num {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(200,149,74,0.4);
+    }
+    .day-cell.sunday .day-num,
+    .col-sun .day-num { color: var(--sun); }
+    .day-cell.saturday .day-num,
+    .col-sat .day-num { color: var(--sat); }
+
+    /* Event chips */
+    .event-chip {
+      display: block;
+      font-size: 0.68rem;
+      padding: 2px 6px;
+      border-radius: 5px;
+      margin-top: 3px;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #fff;
+      font-weight: 500;
+      transition: opacity 0.15s, transform 0.15s;
+      letter-spacing: 0.02em;
+    }
+    .event-chip:hover { opacity: 0.82; transform: translateY(-1px); }
+    .cat-0 { background: var(--cat0); }
+    .cat-1 { background: var(--cat1); }
+    .cat-2 { background: var(--cat2); }
+    .cat-3 { background: var(--cat3); }
+
+    .more-badge {
+      font-size: 0.62rem;
+      color: var(--muted);
+      margin-top: 3px;
+      padding-left: 4px;
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20,30,50,0.55);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal {
+      background: #fff;
+      border-radius: var(--radius);
+      max-width: 520px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(24px) scale(0.98);
+      transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1);
+      scrollbar-width: thin;
+    }
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      display: flex;
+      justify-content: flex-end;
+      padding: 0.75rem 0.75rem 0;
+      z-index: 10;
+    }
+    .modal-close {
+      background: rgba(255,255,255,0.95);
+      border: none;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: #f0f0f0; }
+
+    .modal-flyer-wrap {
+      margin: 0 1.2rem;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f0efe9;
+      max-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-flyer {
+      width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      display: block;
+    }
+    .modal-flyer-placeholder {
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .modal-flyer-placeholder span { font-size: 2.5rem; }
+
+    .modal-cat-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      color: #fff;
+      margin: 1.2rem 1.4rem 0.5rem;
+    }
+    .modal-title {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.35rem;
+      color: var(--primary);
+      line-height: 1.5;
+      padding: 0 1.4rem;
+      margin-bottom: 1rem;
+    }
+    .modal-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0 1.4rem;
+    }
+    .modal-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      font-size: 0.88rem;
+    }
+    .modal-label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      min-width: 54px;
+      padding-top: 1px;
+    }
+    .modal-value { line-height: 1.6; }
+    .modal-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1rem 1.4rem;
+    }
+    .modal-desc {
+      padding: 0 1.4rem;
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: #444;
+      white-space: pre-wrap;
+    }
+    .modal-actions {
+      padding: 1.4rem;
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.72rem 1.6rem;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: #b8842e; transform: translateY(-1px); }
+
+    /* ===== LOADING ===== */
+    .loading-state {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--muted);
+    }
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      .day-cell { min-height: 72px; }
+      .event-chip { font-size: 0.6rem; padding: 1px 4px; }
+      .day-num { width: 22px; height: 22px; font-size: 0.75rem; }
+      .month-title { font-size: 1.2rem; }
+      .modal { max-height: 95vh; }
+    }
+
+    /* ===== DEMO BANNER ===== */
+    .demo-banner {
+      background: linear-gradient(135deg, #ff9f43, #ee5a24);
+      color: #fff;
+      text-align: center;
+      padding: 0.7rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+    .demo-banner a { color: #ffe3b0; }
+    .demo-banner.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- デモ用バナー（本番では非表示にする） -->
+<div class="demo-banner" id="demoBanner">
+  🛠 デモ表示中（サンプルデータ）｜ 本番では <code>CONFIG.SHEET_CSV_URL</code> にスプレッドシートのCSV URLを設定してください
+</div>
+
+<header>
+  <h1 id="hallName">🎭 ホールイベントカレンダー</h1>
+  <p>最新のイベント情報をご確認ください</p>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--cat0)"></div>音楽</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--cat1)"></div>演劇・ダンス</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--cat2)"></div>講座・WS</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--cat3)"></div>展示・その他</div>
+</div>
+
+<div class="wrap">
+  <div class="month-nav">
+    <button class="nav-btn" id="prevBtn">&#8249;</button>
+    <div class="month-title" id="monthTitle">―</div>
+    <button class="nav-btn" id="nextBtn">&#8250;</button>
+  </div>
+  <div class="calendar" id="calendar">
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>イベント情報を読み込んでいます…</p>
+    </div>
+  </div>
+</div>
+
+<!-- モーダル -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <button class="modal-close" id="modalClose" aria-label="閉じる">✕</button>
+    </div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ★ 設定欄 ★  ここだけ編集してください
+// ============================================================
+const CONFIG = {
+  // Google Sheets CSV公開URL
+  // （ファイル → 共有 → ウェブに公開 → CSV → URLをコピー）
+  SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvnIwcKJEakt21FcLiSqXgz0mr44_w7t-kr_9HnfoYTUOzxFRn1emhZoOUFgqK5SQb9JIuWRGp2QpE/pub?gid=0&single=true&output=csv',
+
+  // ホール名（ページタイトル・ヘッダーに使用）
+  HALL_NAME: 'コスモホール',
+
+  // カテゴリ名（スプシのI列: 0〜3 の数値と対応）
+  CATEGORIES: ['音楽', '演劇・ダンス', '講座・WS', '展示・その他'],
+};
+// ============================================================
+
+// スプシの列インデックス（0始まり・1行目はヘッダー行）
+// A:イベント名, B:開始日, C:終了日, D:時間, E:会場, F:概要, G:DriveファイルID, H:申込URL, I:カテゴリ番号
+const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, IMG:6, URL:7, CAT:8 };
+
+// ---- サンプルデータ（SHEET_CSV_URLが空の時に使用） ----
+const DEMO_EVENTS = [
+  { name:'春のオーケストラコンサート', start:'2025/03/08', end:'2025/03/08', time:'14:00〜16:00', place:'大ホール', desc:'地元オーケストラによる春の定期演奏会。バッハ、モーツァルトなどクラシックの名曲をお楽しみください。', imgId:'', url:'#', cat:0 },
+  { name:'市民バレエ発表会', start:'2025/03/15', end:'2025/03/16', time:'13:00〜17:00', place:'大ホール', desc:'市内バレエスクールの生徒による発表会。日頃の練習の成果をお見せします。', imgId:'', url:'#', cat:1 },
+  { name:'写真展「信州の四季」', start:'2025/03/10', end:'2025/03/20', time:'10:00〜17:00', place:'ギャラリー', desc:'地元カメラマン6名による写真展。信州の美しい四季の風景をお楽しみください。', imgId:'', url:'', cat:3 },
+  { name:'初心者向け陶芸教室', start:'2025/03/22', end:'2025/03/22', time:'10:00〜12:00', place:'工作室', desc:'粘土を使った手びねり体験。作品は後日お渡しします（焼成費別途）。定員8名。', imgId:'', url:'#', cat:2 },
+  { name:'落語と漫才ナイト', start:'2025/03/29', end:'2025/03/29', time:'18:30〜20:30', place:'小ホール', desc:'地域の笑いの夜！プロの落語家と若手漫才師によるジョイントライブ。', imgId:'', url:'#', cat:3 },
+];
+
+// ---- グローバル変数 ----
+let events = [];
+let currentYear, currentMonth;
+
+const now = new Date();
+currentYear  = now.getFullYear();
+currentMonth = now.getMonth();
+
+// ---- 初期化 ----
+document.getElementById('hallName').textContent = `🎭 ${CONFIG.HALL_NAME} イベントカレンダー`;
+document.title = `イベントカレンダー｜${CONFIG.HALL_NAME}`;
+
+if (CONFIG.SHEET_CSV_URL) {
+  document.getElementById('demoBanner').classList.add('hidden');
+  loadFromSheet();
+} else {
+  events = DEMO_EVENTS;
+  renderCalendar();
+}
+
+// ---- Google Sheets CSV 取得 ----
+async function loadFromSheet() {
+  try {
+    const res = await fetch(CONFIG.SHEET_CSV_URL);
+    if (!res.ok) throw new Error('fetch error');
+    const text = await res.text();
+    events = parseCSV(text);
+    renderCalendar();
+  } catch(e) {
+    document.getElementById('calendar').innerHTML = `
+      <div class="loading-state">
+        <p>⚠️ データの読み込みに失敗しました。</p>
+        <p style="font-size:0.8rem;margin-top:0.5rem">スプレッドシートのURL・公開設定を確認してください。</p>
+      </div>`;
+  }
+}
+
+// ---- CSV パース ----
+function parseCSV(text) {
+  const result = [];
+  const lines = text.split(/\r?\n/);
+  for (let i = 1; i < lines.length; i++) {
+    const cols = parseCSVLine(lines[i]);
+    if (!cols[COL.NAME]) continue;
+    result.push({
+      name:  cols[COL.NAME]  || '',
+      start: cols[COL.START] || '',
+      end:   cols[COL.END]   || cols[COL.START] || '',
+      time:  cols[COL.TIME]  || '',
+      place: cols[COL.PLACE] || '',
+      desc:  cols[COL.DESC]  || '',
+      imgId: cols[COL.IMG]   || '',
+      url:   cols[COL.URL]   || '',
+      cat:   Math.min(3, Math.max(0, parseInt(cols[COL.CAT] || '0') || 0)),
+    });
+  }
+  return result;
+}
+
+function parseCSVLine(line) {
+  const cols = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '"') { inQ = !inQ; continue; }
+    if (line[i] === ',' && !inQ) { cols.push(cur.trim()); cur = ''; continue; }
+    cur += line[i];
+  }
+  cols.push(cur.trim());
+  return cols;
+}
+
+// ---- 日付ユーティリティ ----
+function toDate(str) {
+  if (!str) return null;
+  return new Date(str.replace(/\//g, '-') + 'T00:00:00');
+}
+function getEventsForDay(y, m, d) {
+  const target = new Date(y, m, d);
+  return events.filter(ev => {
+    const s = toDate(ev.start);
+    const e = toDate(ev.end) || s;
+    return s && target >= s && target <= e;
+  });
+}
+
+// ---- カレンダー描画 ----
+function renderCalendar() {
+  const cal     = document.getElementById('calendar');
+  const titleEl = document.getElementById('monthTitle');
+  titleEl.textContent = `${currentYear}年 ${currentMonth + 1}月`;
+
+  const firstDow = new Date(currentYear, currentMonth, 1).getDay();
+  const lastDate  = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const prevLast  = new Date(currentYear, currentMonth, 0).getDate();
+
+  const DAYS = ['日','月','火','水','木','金','土'];
+  let html = '<div class="day-headers">';
+  DAYS.forEach(d => { html += `<div class="day-header">${d}</div>`; });
+  html += '</div><div class="days-grid">';
+
+  let dayN = 1, nextN = 1;
+  const totalCells = 42;
+
+  for (let i = 0; i < totalCells; i++) {
+    const dow = i % 7;
+    let day, isCur = true;
+
+    if (i < firstDow)         { day = prevLast - firstDow + i + 1; isCur = false; }
+    else if (dayN > lastDate)  { day = nextN++; isCur = false; }
+    else                       { day = dayN++; }
+
+    const isToday = isCur && day === now.getDate()
+      && currentYear === now.getFullYear() && currentMonth === now.getMonth();
+
+    const dowClass = dow === 0 ? 'sunday' : dow === 6 ? 'saturday' : '';
+    const cls = [dowClass, isToday ? 'today' : '', !isCur ? 'other-month' : ''].filter(Boolean).join(' ');
+
+    html += `<div class="day-cell ${cls}">`;
+    html += `<span class="day-num">${day}</span>`;
+
+    if (isCur) {
+      const dayEvs = getEventsForDay(currentYear, currentMonth, day);
+      const show = dayEvs.slice(0, 3);
+      const rest = dayEvs.length - show.length;
+      show.forEach(ev => {
+        const idx = events.indexOf(ev);
+        html += `<span class="event-chip cat-${ev.cat}" data-idx="${idx}" tabindex="0" role="button">${ev.name}</span>`;
+      });
+      if (rest > 0) html += `<div class="more-badge">+${rest}件</div>`;
+    }
+
+    html += '</div>';
+
+    if (!isCur && dayN > lastDate && i >= 34) break;
+  }
+
+  html += '</div>';
+  cal.innerHTML = html;
+
+  cal.querySelectorAll('.event-chip').forEach(chip => {
+    chip.addEventListener('click', () => openModal(parseInt(chip.dataset.idx)));
+    chip.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(parseInt(chip.dataset.idx)); });
+  });
+}
+
+// ---- モーダル ----
+const CAT_COLORS = ['var(--cat0)','var(--cat1)','var(--cat2)','var(--cat3)'];
+
+function openModal(idx) {
+  const ev = events[idx];
+  const content = document.getElementById('modalContent');
+
+  const imgUrl = ev.imgId
+    ? `https://drive.google.com/uc?export=view&id=${ev.imgId}`
+    : null;
+
+  const dateStr = (ev.end && ev.end !== ev.start)
+    ? `${ev.start}　〜　${ev.end}`
+    : ev.start;
+
+  const catName  = CONFIG.CATEGORIES[ev.cat] || '';
+  const catColor = CAT_COLORS[ev.cat] || CAT_COLORS[0];
+
+  content.innerHTML = `
+    <div class="modal-flyer-wrap">
+      ${imgUrl
+        ? `<img class="modal-flyer" src="${imgUrl}" alt="${ev.name}のチラシ"
+              onerror="this.parentElement.innerHTML='<div class=\\"modal-flyer-placeholder\\"><span>🎪</span><p>チラシ画像を準備中</p></div>'">`
+        : `<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシなし</p></div>`}
+    </div>
+    <div class="modal-cat-badge" style="background:${catColor}">${catName}</div>
+    <h2 class="modal-title">${ev.name}</h2>
+    <div class="modal-info-list">
+      ${dateStr ? `<div class="modal-info-row"><span class="modal-label">📅 日程</span><span class="modal-value">${dateStr}</span></div>` : ''}
+      ${ev.time  ? `<div class="modal-info-row"><span class="modal-label">🕐 時間</span><span class="modal-value">${ev.time}</span></div>` : ''}
+      ${ev.place ? `<div class="modal-info-row"><span class="modal-label">📍 会場</span><span class="modal-value">${ev.place}</span></div>` : ''}
+    </div>
+    ${ev.desc ? `<div class="modal-divider"></div><p class="modal-desc">${ev.desc}</p>` : ''}
+    ${ev.url && ev.url !== '#' ? `
+      <div class="modal-actions">
+        <a class="btn-primary" href="${ev.url}" target="_blank" rel="noopener">🎟 申込・詳細はこちら</a>
+      </div>` : '<div style="height:1.4rem"></div>'}
+  `;
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modal').scrollTop = 0;
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target.id === 'modalOverlay') closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ---- 月ナビ ----
+document.getElementById('prevBtn').addEventListener('click', () => {
+  currentMonth--;
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  renderCalendar();
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  currentMonth++;
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  renderCalendar();
+});
+</script>
+</body>
+</html>
