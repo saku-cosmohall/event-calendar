@@ -747,7 +747,7 @@ function openModal(idx) {
   const content = document.getElementById('modalContent');
 
   const imgUrl = ev.imgId
-    ? `https://drive.google.com/uc?export=view&id=${ev.imgId}`
+    ? `https://drive.google.com/thumbnail?id=${ev.imgId}&sz=w800`
     : null;
 
   const dateStr = (ev.end && ev.end !== ev.start)
