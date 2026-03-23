@@ -179,7 +179,7 @@
     }
     .day-cell {
       background: var(--surface);
-      min-height: clamp(72px, 10vw, 108px);
+      min-height: 108px;
       padding: 0.45rem 0.4rem 0.5rem;
       position: relative;
       transition: background 0.15s;
@@ -210,7 +210,7 @@
     /* Event chips */
     .event-chip {
       display: block;
-      font-size: clamp(0.58rem, 1.1vw, 0.68rem);
+      font-size: 0.68rem;
       padding: 2px 6px;
       border-radius: 5px;
       margin-top: 3px;
@@ -407,11 +407,24 @@
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 640px) {
-      .day-cell { min-height: 72px; }
-      .event-chip { font-size: 0.6rem; padding: 1px 4px; }
-      .day-num { width: 22px; height: 22px; font-size: 0.75rem; }
-      .month-title { font-size: 1.2rem; }
-      .modal { max-height: 95vh; }
+      .wrap { padding: 0 0.5rem; }
+      .day-cell { min-height: 52px; padding: 0.3rem 0.2rem; }
+      .day-num { width: 20px; height: 20px; font-size: 0.7rem; }
+      .event-chip { display: none; } /* スマホはドットのみ */
+      .more-badge { display: none; }
+      .dot-row { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 3px; }
+      .event-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      .day-cell.has-events { cursor: pointer; }
+      .nav-select { font-size: 0.95rem; padding: 0.25rem 0.4rem; }
+      .nav-select-label { font-size: 0.95rem; }
+      .nav-btn { width: 34px; height: 34px; font-size: 1rem; }
+    }
+    @media (min-width: 641px) {
+      .dot-row { display: none; }
     }
 
     /* ===== DEMO BANNER ===== */
@@ -641,19 +654,30 @@ function renderCalendar() {
 
     const dowClass = dow === 0 ? 'sunday' : dow === 6 ? 'saturday' : '';
     const cls = [dowClass, isToday ? 'today' : '', !isCur ? 'other-month' : ''].filter(Boolean).join(' ');
+    const dayEvs2 = isCur ? getEventsForDay(currentYear, currentMonth, dayN > lastDate ? nextN - 1 : (i < firstDow ? prevLast - firstDow + i + 1 : dayN - 1)) : [];
+    const hasEv = isCur && dayEvs2.length > 0 ? ' has-events' : '';
 
-    html += `<div class="day-cell ${cls}">`;
+    html += `<div class="day-cell ${cls}${hasEv}">`;
     html += `<span class="day-num">${day}</span>`;
 
     if (isCur) {
       const dayEvs = getEventsForDay(currentYear, currentMonth, day);
       const show = dayEvs.slice(0, 3);
       const rest = dayEvs.length - show.length;
+      // PC: チップ表示
       show.forEach(ev => {
         const idx = events.indexOf(ev);
         html += `<span class="event-chip cat-${ev.cat}" data-idx="${idx}" tabindex="0" role="button">${ev.name}</span>`;
       });
       if (rest > 0) html += `<div class="more-badge">+${rest}件</div>`;
+      // スマホ: ドット表示
+      if (dayEvs.length > 0) {
+        html += `<div class="dot-row" data-day="${day}">`;
+        dayEvs.slice(0, 5).forEach(ev => {
+          html += `<span class="event-dot cat-${ev.cat}" style="background:var(--cat${ev.cat})"></span>`;
+        });
+        html += `</div>`;
+      }
     }
 
     html += '</div>';
@@ -668,6 +692,51 @@ function renderCalendar() {
     chip.addEventListener('click', () => openModal(parseInt(chip.dataset.idx)));
     chip.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(parseInt(chip.dataset.idx)); });
   });
+
+  // スマホ：日付セルタップでその日のイベント一覧
+  cal.querySelectorAll('.day-cell.has-events, .dot-row').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.classList.contains('event-chip')) return;
+      const cell = el.closest('.day-cell') || el.parentElement;
+      const dayNum = cell.querySelector('.day-num');
+      if (!dayNum) return;
+      const d = parseInt(dayNum.textContent);
+      if (isNaN(d)) return;
+      openDayModal(currentYear, currentMonth, d);
+    });
+  });
+}
+
+// ---- スマホ用：その日のイベント一覧モーダル ----
+function openDayModal(y, m, d) {
+  const dayEvs = getEventsForDay(y, m, d);
+  if (dayEvs.length === 0) return;
+  if (dayEvs.length === 1) { openModal(events.indexOf(dayEvs[0])); return; }
+
+  const content = document.getElementById('modalContent');
+  content.innerHTML = `
+    <div style="padding:1.2rem 1.4rem 0.5rem">
+      <h2 class="modal-title" style="margin:0 0 1rem">${m+1}月${d}日のイベント</h2>
+      <div style="display:flex;flex-direction:column;gap:0.6rem;padding-bottom:1.4rem">
+        ${dayEvs.map((ev, i) => {
+          const idx = events.indexOf(ev);
+          return `<button onclick="openModal(${idx})" style="
+            display:flex;align-items:center;gap:0.8rem;
+            background:#f7f6f2;border:none;border-radius:10px;
+            padding:0.8rem 1rem;cursor:pointer;text-align:left;width:100%;
+            font-family:inherit;font-size:0.9rem;color:var(--text);
+            transition:background 0.15s;
+          " onmouseover="this.style.background='#eeecea'" onmouseout="this.style.background='#f7f6f2'">
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--cat${ev.cat});flex-shrink:0"></span>
+            <span style="flex:1;font-weight:500">${ev.name}</span>
+            <span style="font-size:0.75rem;color:var(--muted)">${ev.time || ''}</span>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modal').scrollTop = 0;
 }
 
 // ---- モーダル ----
