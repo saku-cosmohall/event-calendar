@@ -1601,18 +1601,32 @@ document.getElementById('monthSelect').addEventListener('change', e => {
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ---- OpenStreetMap（Leaflet）初期化 ----
-const MAP_LAT = 36.2488;
-const MAP_LNG = 138.4770;
 
-const map = L.map('footerMap', { zoomControl: true, scrollWheelZoom: false })
-  .setView([MAP_LAT, MAP_LNG], 15);
+<script>
+window.addEventListener('load', function() {
+  var MAP_LAT = 36.2488;
+  var MAP_LNG = 138.4770;
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+  var map = L.map('footerMap', { zoomControl: true, scrollWheelZoom: false })
+    .setView([MAP_LAT, MAP_LNG], 15);
 
-const markerIcon = L.divIcon({
-  html: '<div style="background:#c8954a;width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>',
-  iconSize: [20, 20],
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  var markerIcon = L.divIcon({
+    html: '<div style="background:#c8954a;width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>',
+    iconSize: [20, 20],
+    iconAnchor: [10, 20],
+    className: ''
+  });
+  L.marker([MAP_LAT, MAP_LNG], { icon: markerIcon })
+    .addTo(map)
+    .bindPopup('<b>交流文化館浅科</b><br>長野県佐久市八幡229番地')
+    .openPopup();
+
+  setTimeout(function() { map.invalidateSize(); }, 300);
+});
+</script>
+</body>
+</html>
