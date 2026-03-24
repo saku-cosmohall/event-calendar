@@ -430,6 +430,247 @@
       .dot-row { display: none; }
     }
 
+    /* ===== FACILITIES ===== */
+    .facilities-section {
+      background: var(--primary);
+      padding: 3.5rem 1rem;
+      margin-top: 3rem;
+    }
+    .facilities-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .facilities-heading {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .facilities-heading h2 {
+      font-family: 'Shippori Mincho', serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      color: #fff;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+    .facilities-heading p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.05em;
+    }
+    .facilities-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .facility-card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 1.4rem 1.2rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .facility-card:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateY(-3px);
+    }
+    .facility-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.8rem;
+    }
+    .facility-name {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1rem;
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.04em;
+    }
+    .facility-cap {
+      display: inline-block;
+      font-size: 0.72rem;
+      background: var(--accent);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-bottom: 0.7rem;
+      font-weight: 700;
+    }
+    .facility-desc {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 640px) {
+      .facilities-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 400px) {
+      .facilities-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== FACILITIES ===== */
+    .facilities-section {
+      background: var(--bg);
+      padding: 3.5rem 1rem;
+      margin-top: 3rem;
+    }
+    .facilities-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .facilities-heading {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .facilities-heading h2 {
+      font-family: 'Shippori Mincho', serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      color: var(--primary);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+    .facilities-heading p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .facilities-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+    .facility-card {
+      background: var(--surface);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+    .facility-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-4px);
+    }
+    /* 写真エリア */
+    .facility-photo {
+      position: relative;
+      height: 180px;
+      overflow: hidden;
+      background: #d0dce8;
+    }
+    .facility-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .facility-card:hover .facility-photo img {
+      transform: scale(1.05);
+    }
+    /* 写真がない場合のプレースホルダー */
+    .facility-photo-placeholder {
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #c5d8e8, #a8c4d8);
+      color: rgba(27,58,92,0.4);
+      font-size: 2.5rem;
+      gap: 0.4rem;
+    }
+    .facility-photo-placeholder span {
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+    }
+    /* タグ */
+    .facility-tags {
+      position: absolute;
+      top: 0.7rem;
+      left: 0.7rem;
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .facility-tag {
+      background: rgba(255,255,255,0.92);
+      color: var(--primary);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+      letter-spacing: 0.03em;
+    }
+    /* 本文 */
+    .facility-body {
+      padding: 1.1rem 1.2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .facility-name {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.05rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+    }
+    .facility-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 0.9rem;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .facility-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+    .facility-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: #555;
+    }
+    .facility-meta-icon { font-size: 0.9rem; }
+    .facility-btn {
+      display: block;
+      width: 100%;
+      padding: 0.7rem;
+      background: #f0eff8;
+      color: var(--primary);
+      border: none;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      letter-spacing: 0.04em;
+      transition: background 0.2s;
+      font-family: inherit;
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+    .facility-btn:hover { background: #dddcf0; }
+
+    @media (max-width: 760px) {
+      .facilities-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .facilities-grid { grid-template-columns: 1fr; }
+      .facility-photo { height: 200px; }
+    }
+
     /* ===== FOOTER ===== */
     .site-footer {
       background: var(--primary);
@@ -593,6 +834,110 @@
       font-size: 0.9rem;
     }
 
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      height: 100svh;
+      min-height: 500px;
+      max-height: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      color: #fff;
+    }
+    /* ★ 写真をここに設定してね！
+       background-image: url('your-photo.jpg'); に変えるだけ */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('hero.jpg');
+      background-size: cover;
+      background-position: center;
+      background-color: #1b3a5c; /* 写真がない場合のフォールバック */
+      transform: scale(1.05);
+      transition: transform 8s ease;
+    }
+    .hero-bg.loaded { transform: scale(1); }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(10,20,40,0.35) 0%,
+        rgba(10,20,40,0.55) 60%,
+        rgba(10,20,40,0.75) 100%
+      );
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 0 1.5rem;
+      animation: heroFadeUp 1s ease both;
+    }
+    @keyframes heroFadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      margin-bottom: 1.4rem;
+      opacity: 0.85;
+    }
+    .hero-title {
+      font-family: 'Shippori Mincho', serif;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      line-height: 1.4;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+    }
+    .hero-sub {
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      opacity: 0.85;
+      line-height: 1.8;
+      letter-spacing: 0.05em;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      opacity: 0.7;
+      cursor: pointer;
+      animation: heroFadeUp 1s 0.5s ease both;
+      transition: opacity 0.2s;
+    }
+    .hero-scroll:hover { opacity: 1; }
+    .hero-scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
+      animation: scrollLine 1.5s ease-in-out infinite;
+    }
+    @keyframes scrollLine {
+      0%   { transform: scaleY(0); transform-origin: top; }
+      50%  { transform: scaleY(1); transform-origin: top; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
     /* ===== DEMO BANNER ===== */
     .demo-banner {
       background: linear-gradient(135deg, #ff9f43, #ee5a24);
@@ -617,6 +962,26 @@
 <div class="demo-banner" id="previewBanner" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);display:none">
   👀 プレビューモード｜非公開イベントを含む全イベントを表示しています
 </div>
+
+<!-- ヒーローセクション -->
+<section class="hero" id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-label">COSMO HALL</div>
+    <h1 class="hero-title">
+      音楽と文化が<br>ここに集まる場所
+    </h1>
+    <p class="hero-sub">
+      佐久市コスモホールは、地域の皆さまとともに<br>
+      豊かな文化・芸術の時間をつくる施設です。
+    </p>
+  </div>
+  <div class="hero-scroll" id="heroScroll">
+    <span>SCROLL</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
 
 <header>
   <h1 id="hallName">🎭 ホールイベントカレンダー</h1>
@@ -656,6 +1021,130 @@
   <!-- イベント一覧 -->
   <div class="event-list-wrap" id="eventListWrap"></div>
 </div>
+
+<!-- 施設紹介 -->
+<section class="facilities-section">
+  <div class="facilities-inner">
+    <div class="facilities-heading">
+      <h2>施設のご案内</h2>
+      <p>交流文化館浅科のさまざまな施設をご利用いただけます</p>
+    </div>
+    <div class="facilities-grid">
+
+      <div class="facility-card">
+        <div class="facility-photo">
+          <!-- ★ 写真差し替え：img タグの src を変更 or 下のプレースホルダーを削除 -->
+          <div class="facility-photo-placeholder">🎭<span>PHOTO</span></div>
+          <div class="facility-tags">
+            <span class="facility-tag">メインホール</span>
+            <span class="facility-tag">400席</span>
+          </div>
+        </div>
+        <div class="facility-body">
+          <div class="facility-name">穂の香ホール</div>
+          <p class="facility-desc">自然光を活かした明るい多目的ホール。コンサート・講演会・演劇など幅広く活用できます。</p>
+          <div class="facility-meta">
+            <div class="facility-meta-row"><span class="facility-meta-icon">🪑</span>400席（前方昇降式・ロールバック・2階固定席）</div>
+            <div class="facility-meta-row"><span class="facility-meta-icon">🕐</span>9:00〜22:00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="facility-card">
+        <div class="facility-photo">
+          <div class="facility-photo-placeholder">🎵<span>PHOTO</span></div>
+          <div class="facility-tags">
+            <span class="facility-tag">練習・リハーサル</span>
+          </div>
+        </div>
+        <div class="facility-body">
+          <div class="facility-name">音楽室</div>
+          <p class="facility-desc">演奏練習やリハーサルに最適な音楽室。ピアノを備え、本番前の仕上げにもご利用いただけます。</p>
+          <div class="facility-meta">
+            <div class="facility-meta-row"><span class="facility-meta-icon">🎹</span>ピアノあり</div>
+            <div class="facility-meta-row"><span class="facility-meta-icon">🕐</span>9:00〜22:00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="facility-card">
+        <div class="facility-photo">
+          <div class="facility-photo-placeholder">👶<span>PHOTO</span></div>
+          <div class="facility-tags">
+            <span class="facility-tag">子連れ歓迎</span>
+            <span class="facility-tag">ファミリー</span>
+          </div>
+        </div>
+        <div class="facility-body">
+          <div class="facility-name">親子室</div>
+          <p class="facility-desc">小さなお子様連れでも気兼ねなくホールイベントを鑑賞できる小部屋。音声はスピーカーでお届け。</p>
+          <div class="facility-meta">
+            <div class="facility-meta-row"><span class="facility-meta-icon">🔊</span>スピーカーで音声視聴</div>
+            <div class="facility-meta-row"><span class="facility-meta-icon">👁</span>生の舞台が見られます</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="facility-card">
+        <div class="facility-photo">
+          <div class="facility-photo-placeholder">☕<span>PHOTO</span></div>
+          <div class="facility-tags">
+            <span class="facility-tag">交流スペース</span>
+          </div>
+        </div>
+        <div class="facility-body">
+          <div class="facility-name">談話喫茶コーナー</div>
+          <p class="facility-desc">来館者同士が気軽に交流できる憩いのスペース。イベント前後のひとときをゆっくりお過ごしください。</p>
+          <div class="facility-meta">
+            <div class="facility-meta-row"><span class="facility-meta-icon">🌿</span>自然光が差し込む明るい空間</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="facility-card">
+        <div class="facility-photo">
+          <div class="facility-photo-placeholder">📚<span>PHOTO</span></div>
+          <div class="facility-tags">
+            <span class="facility-tag">併設</span>
+          </div>
+        </div>
+        <div class="facility-body">
+          <div class="facility-name">図書館</div>
+          <p class="facility-desc">館内に図書館を併設。文化的な活動の拠点として、学びと交流の場を提供しています。</p>
+          <div class="facility-meta">
+            <div class="facility-meta-row"><span class="facility-meta-icon">📖</span>どなたでもご利用いただけます</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="facility-card">
+        <div class="facility-photo">
+          <div class="facility-photo-placeholder">🌿<span>PHOTO</span></div>
+          <div class="facility-tags">
+            <span class="facility-tag">自然光</span>
+            <span class="facility-tag">緑に囲まれた立地</span>
+          </div>
+        </div>
+        <div class="facility-body">
+          <div class="facility-name">周辺環境</div>
+          <p class="facility-desc">自然の景色に美しくとけ込む建物。自然光を活かした設計で訪れるだけで心が和む空間です。</p>
+          <div class="facility-meta">
+            <div class="facility-meta-row"><span class="facility-meta-icon">🚗</span>佐久ICから車で15分</div>
+            <div class="facility-meta-row"><span class="facility-meta-icon">🚃</span>佐久平駅から車で10分</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <a href="https://www.city.saku.nagano.jp/bunka/sakubun/koryubunka.html" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.8rem 2rem;background:var(--primary);color:#fff;border-radius:30px;font-size:0.88rem;font-weight:700;text-decoration:none;letter-spacing:0.05em;transition:opacity 0.2s"
+        onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+        📋 詳しい施設情報は佐久市ホームページへ
+      </a>
+    </div>
+  </div>
+</section>
 
 <!-- モーダル -->
 <div class="modal-overlay" id="modalOverlay">
@@ -1052,6 +1541,12 @@ document.getElementById('modalOverlay').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
+// ---- ヒーロー ----
+document.getElementById('heroBg').classList.add('loaded');
+document.getElementById('heroScroll').addEventListener('click', () => {
+  document.querySelector('header').scrollIntoView({ behavior: 'smooth' });
+});
+
 document.getElementById('prevBtn').addEventListener('click', () => {
   currentMonth--;
   if (currentMonth < 0) { currentMonth = 11; currentYear--; initYearSelect(); }
@@ -1088,7 +1583,7 @@ document.getElementById('monthSelect').addEventListener('change', e => {
         </div>
         <div class="footer-info-row">
           <span class="footer-info-icon">✉️</span>
-          <span>info@cosmo-hall.example.jp</span>
+          <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8fe6e1e9e0cfece0fce2e0a2e7eee3e3a1eaf7eee2ffe3eaa1e5ff">[email&#160;protected]</a></span>
         </div>
         <div class="footer-info-row">
           <span class="footer-info-icon">🕐</span>
@@ -1106,7 +1601,7 @@ document.getElementById('monthSelect').addEventListener('change', e => {
   </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ---- OpenStreetMap（Leaflet）初期化 ----
 const MAP_LAT = 36.2488;
 const MAP_LNG = 138.4770;
@@ -1121,14 +1616,3 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markerIcon = L.divIcon({
   html: '<div style="background:#c8954a;width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>',
   iconSize: [20, 20],
-  iconAnchor: [10, 20],
-  className: ''
-});
-L.marker([MAP_LAT, MAP_LNG], { icon: markerIcon })
-  .addTo(map)
-  .bindPopup('<b>コスモホール</b><br>〒385-0000 長野県佐久市○○1-2-3')
-  .openPopup();
-</script>
-
-</body>
-</html>
