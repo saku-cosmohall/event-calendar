@@ -224,6 +224,7 @@
       letter-spacing: 0.02em;
     }
     .event-chip:hover { opacity: 0.82; transform: translateY(-1px); }
+    .event-chip.unpublished { opacity: 0.55; border: 1.5px dashed rgba(255,255,255,0.6); }
     .cat-0 { background: var(--cat0); }
     .cat-1 { background: var(--cat1); }
     .cat-2 { background: var(--cat2); }
@@ -447,6 +448,11 @@
   🛠 デモ表示中（サンプルデータ）｜ 本番では <code>CONFIG.SHEET_CSV_URL</code> にスプレッドシートのCSV URLを設定してください
 </div>
 
+<!-- プレビューバナー -->
+<div class="demo-banner" id="previewBanner" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);display:none">
+  👀 プレビューモード｜非公開イベントを含む全イベントを表示しています
+</div>
+
 <header>
   <h1 id="hallName">🎭 ホールイベントカレンダー</h1>
   <p>最新のイベント情報をご確認ください</p>
@@ -531,12 +537,18 @@ const now = new Date();
 currentYear  = now.getFullYear();
 currentMonth = now.getMonth();
 
+// ---- プレビューモード判定 ----
+const IS_PREVIEW = new URLSearchParams(window.location.search).get('preview') === 'true';
+
 // ---- 初期化 ----
 document.getElementById('hallName').textContent = `🎭 ${CONFIG.HALL_NAME} イベントカレンダー`;
 document.title = `イベントカレンダー｜${CONFIG.HALL_NAME}`;
 
 if (CONFIG.SHEET_CSV_URL) {
   document.getElementById('demoBanner').classList.add('hidden');
+  if (IS_PREVIEW) {
+    document.getElementById('previewBanner').style.display = 'block';
+  }
   loadFromSheet();
 } else {
   events = DEMO_EVENTS;
@@ -568,7 +580,7 @@ function parseCSV(text) {
     const cols = parseCSVLine(lines[i]);
     if (!cols[COL.NAME]) continue;
     const publish = cols[COL.PUBLISH];
-    if (publish !== 'TRUE') continue; // 公開チェックなしはスキップ
+    if (!IS_PREVIEW && publish !== 'TRUE') continue; // 通常モードは公開チェックのみ
     result.push({
       name:  cols[COL.NAME]  || '',
       start: cols[COL.START] || '',
@@ -579,6 +591,7 @@ function parseCSV(text) {
       imgId: cols[COL.IMG]   || '',
       url:   cols[COL.URL]   || '',
       cat:   Math.min(3, Math.max(0, parseInt(cols[COL.CAT] || '0') || 0)),
+      published: cols[COL.PUBLISH] === 'TRUE',
     });
   }
   return result;
@@ -669,7 +682,7 @@ function renderCalendar() {
       // PC: チップ表示
       show.forEach(ev => {
         const idx = events.indexOf(ev);
-        html += `<span class="event-chip cat-${ev.cat}" data-idx="${idx}" tabindex="0" role="button">${ev.name}</span>`;
+        html += `<span class="event-chip cat-${ev.cat}${ev.published ? '' : ' unpublished'}" data-idx="${idx}" tabindex="0" role="button">${ev.published ? '' : '🔒 '}${ev.name}</span>`;
       });
       if (rest > 0) html += `<div class="more-badge">+${rest}件</div>`;
       // スマホ: ドット表示
