@@ -428,6 +428,81 @@
       .dot-row { display: none; }
     }
 
+    /* ===== EVENT LIST ===== */
+    .event-list-wrap {
+      margin-top: 2rem;
+    }
+    .event-list-title {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      padding-left: 0.5rem;
+      border-left: 4px solid var(--accent);
+    }
+    .event-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .event-list-item {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.15s;
+      border-left: 4px solid var(--primary);
+    }
+    .event-list-item:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .event-list-item.unpublished {
+      opacity: 0.6;
+      border-left-style: dashed;
+    }
+    .event-list-date {
+      min-width: 80px;
+      text-align: center;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 8px;
+      padding: 0.4rem 0.5rem;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      flex-shrink: 0;
+    }
+    .event-list-date .date-month { font-size: 0.7rem; opacity: 0.8; }
+    .event-list-date .date-day   { font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
+    .event-list-date .date-dow   { font-size: 0.68rem; opacity: 0.8; }
+    .event-list-body { flex: 1; min-width: 0; }
+    .event-list-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.3rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .event-list-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 0.8rem;
+    }
+    .event-list-empty {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
     /* ===== DEMO BANNER ===== */
     .demo-banner {
       background: linear-gradient(135deg, #ff9f43, #ee5a24);
@@ -487,6 +562,9 @@
       <p>イベント情報を読み込んでいます…</p>
     </div>
   </div>
+
+  <!-- イベント一覧 -->
+  <div class="event-list-wrap" id="eventListWrap"></div>
 </div>
 
 <!-- モーダル -->
@@ -719,6 +797,72 @@ function renderCalendar() {
       if (isNaN(d)) return;
       openDayModal(currentYear, currentMonth, d);
     });
+  });
+
+  // イベント一覧を描画
+  renderEventList();
+}
+
+// ---- イベント一覧描画 ----
+function renderEventList() {
+  const wrap = document.getElementById('eventListWrap');
+  const DOWS = ['日','月','火','水','木','金','土'];
+
+  // 当月のイベントを日付順に取得
+  const monthEvs = events.filter(ev => {
+    const s = toDate(ev.start);
+    const e = toDate(ev.end) || s;
+    const mStart = new Date(currentYear, currentMonth, 1);
+    const mEnd   = new Date(currentYear, currentMonth + 1, 0);
+    return s && e >= mStart && s <= mEnd;
+  }).sort((a, b) => toDate(a.start) - toDate(b.start));
+
+  if (monthEvs.length === 0) {
+    wrap.innerHTML = `
+      <div class="event-list-title">${currentMonth + 1}月のイベント</div>
+      <div class="event-list-empty">この月のイベントはありません</div>`;
+    return;
+  }
+
+  const CAT_COLORS_LIST = ['var(--cat0)','var(--cat1)','var(--cat2)','var(--cat3)'];
+
+  let html = `<div class="event-list-title">${currentMonth + 1}月のイベント（${monthEvs.length}件）</div><div class="event-list">`;
+
+  monthEvs.forEach(ev => {
+    const idx   = events.indexOf(ev);
+    const sDate = toDate(ev.start);
+    const month = sDate.getMonth() + 1;
+    const day   = sDate.getDate();
+    const dow   = DOWS[sDate.getDay()];
+    const dateLabel = ev.end && ev.end !== ev.start
+      ? `${month}/${day}〜${toDate(ev.end).getDate()}日`
+      : `${month}/${day}（${dow}）`;
+    const borderColor = CAT_COLORS_LIST[ev.cat] || 'var(--primary)';
+    const unpublished = ev.published === false ? ' unpublished' : '';
+    const lockIcon    = ev.published === false ? '🔒 ' : '';
+
+    html += `
+      <div class="event-list-item${unpublished}" style="border-left-color:${borderColor}" data-idx="${idx}">
+        <div class="event-list-date" style="background:${borderColor}">
+          <div class="date-month">${month}月</div>
+          <div class="date-day">${day}</div>
+          <div class="date-dow">${dow}</div>
+        </div>
+        <div class="event-list-body">
+          <div class="event-list-name">${lockIcon}${ev.name}</div>
+          <div class="event-list-meta">
+            ${ev.time  ? `<span>🕐 ${ev.time}</span>` : ''}
+            ${ev.place ? `<span>📍 ${ev.place}</span>` : ''}
+          </div>
+        </div>
+      </div>`;
+  });
+
+  html += '</div>';
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('.event-list-item').forEach(item => {
+    item.addEventListener('click', () => openModal(parseInt(item.dataset.idx)));
   });
 }
 
