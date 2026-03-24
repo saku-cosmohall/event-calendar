@@ -6,6 +6,8 @@
   <title>イベントカレンダー</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
       --bg: #f4f3ee;
@@ -426,6 +428,94 @@
     }
     @media (min-width: 641px) {
       .dot-row { display: none; }
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.85);
+      margin-top: 4rem;
+      padding: 3rem 1rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-footer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(200,149,74,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .footer-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      position: relative;
+    }
+    .footer-info h2 {
+      font-family: 'Shippori Mincho', serif;
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.08em;
+    }
+    .footer-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-bottom: 1.4rem;
+    }
+    .footer-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    .footer-info-icon {
+      font-size: 1rem;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+    .footer-access {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .footer-map {
+      border-radius: 12px;
+      overflow: hidden;
+      height: 220px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .footer-map iframe {
+      width: 100%; height: 100%;
+      border: none; display: block;
+    }
+    .footer-bottom {
+      max-width: 1000px;
+      margin: 2rem auto 0;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      position: relative;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 640px) {
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer-map { height: 180px; }
     }
 
     /* ===== EVENT LIST ===== */
@@ -962,7 +1052,6 @@ document.getElementById('modalOverlay').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ---- 月ナビ ----
 document.getElementById('prevBtn').addEventListener('click', () => {
   currentMonth--;
   if (currentMonth < 0) { currentMonth = 11; currentYear--; initYearSelect(); }
@@ -982,5 +1071,64 @@ document.getElementById('monthSelect').addEventListener('change', e => {
   renderCalendar();
 });
 </script>
+
+<!-- フッター -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-info">
+      <h2>🎭 コスモホール</h2>
+      <div class="footer-info-list">
+        <div class="footer-info-row">
+          <span class="footer-info-icon">📍</span>
+          <span>〒385-0000 長野県佐久市○○1-2-3</span>
+        </div>
+        <div class="footer-info-row">
+          <span class="footer-info-icon">📞</span>
+          <span>0267-00-0000</span>
+        </div>
+        <div class="footer-info-row">
+          <span class="footer-info-icon">✉️</span>
+          <span>info@cosmo-hall.example.jp</span>
+        </div>
+        <div class="footer-info-row">
+          <span class="footer-info-icon">🕐</span>
+          <span>開館時間 9:00〜21:00<br>休館日：毎週月曜日・祝日の翌日</span>
+        </div>
+      </div>
+      <div class="footer-access">
+        ♿ 車椅子・ベビーカーでのご来場も歓迎です
+      </div>
+    </div>
+    <div class="footer-map" id="footerMap"></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 コスモホール All Rights Reserved.</span>
+  </div>
+</footer>
+
+<script>
+// ---- OpenStreetMap（Leaflet）初期化 ----
+const MAP_LAT = 36.2488;
+const MAP_LNG = 138.4770;
+
+const map = L.map('footerMap', { zoomControl: true, scrollWheelZoom: false })
+  .setView([MAP_LAT, MAP_LNG], 15);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+const markerIcon = L.divIcon({
+  html: '<div style="background:#c8954a;width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 20],
+  className: ''
+});
+L.marker([MAP_LAT, MAP_LNG], { icon: markerIcon })
+  .addTo(map)
+  .bindPopup('<b>コスモホール</b><br>〒385-0000 長野県佐久市○○1-2-3')
+  .openPopup();
+</script>
+
 </body>
 </html>
