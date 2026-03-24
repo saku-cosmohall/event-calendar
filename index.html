@@ -511,8 +511,8 @@ const CONFIG = {
 // ============================================================
 
 // スプシの列インデックス（0始まり・1行目はヘッダー行）
-// A:イベント名, B:開始日, C:終了日, D:時間, E:会場, F:概要, G:チェックボックス(skip), H:画像ステータス(skip), I:申込URL, J:カテゴリ番号, K:DriveファイルID
-const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, URL:8, CAT:9, IMG:10 };
+// A:イベント名, B:開始日, C:終了日, D:時間, E:会場, F:概要, G:チェックボックス(skip), H:画像ステータス(skip), I:申込URL, J:カテゴリ番号, K:DriveファイルID, L:公開フラグ
+const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, URL:8, CAT:9, IMG:10, PUBLISH:11 };
 
 // ---- サンプルデータ（SHEET_CSV_URLが空の時に使用） ----
 const DEMO_EVENTS = [
@@ -567,6 +567,8 @@ function parseCSV(text) {
   for (let i = 1; i < lines.length; i++) {
     const cols = parseCSVLine(lines[i]);
     if (!cols[COL.NAME]) continue;
+    const publish = cols[COL.PUBLISH];
+    if (publish !== 'TRUE') continue; // 公開チェックなしはスキップ
     result.push({
       name:  cols[COL.NAME]  || '',
       start: cols[COL.START] || '',
