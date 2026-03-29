@@ -973,7 +973,7 @@
       音楽と文化が<br>ここに集まる場所
     </h1>
     <p class="hero-sub">
-      佐久市コスモホールは、地域の皆さまとともに<br>
+      testホールは、地域の皆さまとともに<br>
       豊かな文化・芸術の時間をつくる施設です。
     </p>
   </div>
@@ -1027,7 +1027,7 @@
   <div class="facilities-inner">
     <div class="facilities-heading">
       <h2>施設のご案内</h2>
-      <p>交流文化館浅科のさまざまな施設をご利用いただけます</p>
+      <p>testホールのさまざまな施設をご利用いただけます</p>
     </div>
     <div class="facilities-grid">
 
@@ -1041,7 +1041,7 @@
           </div>
         </div>
         <div class="facility-body">
-          <div class="facility-name">穂の香ホール</div>
+          <div class="facility-name">testホール</div>
           <p class="facility-desc">自然光を活かした明るい多目的ホール。コンサート・講演会・演劇など幅広く活用できます。</p>
           <div class="facility-meta">
             <div class="facility-meta-row"><span class="facility-meta-icon">🪑</span>400席（前方昇降式・ロールバック・2階固定席）</div>
@@ -1140,7 +1140,7 @@
       <a href="https://www.city.saku.nagano.jp/bunka/sakubun/koryubunka.html" target="_blank" rel="noopener"
         style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.8rem 2rem;background:var(--primary);color:#fff;border-radius:30px;font-size:0.88rem;font-weight:700;text-decoration:none;letter-spacing:0.05em;transition:opacity 0.2s"
         onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-        📋 詳しい施設情報は佐久市ホームページへ
+        📋 詳しい施設情報はtest市ホームページへ
       </a>
     </div>
   </div>
@@ -1166,7 +1166,7 @@ const CONFIG = {
   SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvnIwcKJEakt21FcLiSqXgz0mr44_w7t-kr_9HnfoYTUOzxFRn1emhZoOUFgqK5SQb9JIuWRGp2QpE/pub?gid=0&single=true&output=csv',
 
   // ホール名（ページタイトル・ヘッダーに使用）
-  HALL_NAME: 'コスモホール',
+  HALL_NAME: 'testホール',
 
   // カテゴリ名（スプシのI列: 0〜3 の数値と対応）
   CATEGORIES: ['音楽', '演劇・ダンス', '講座・WS', '展示・その他'],
@@ -1571,7 +1571,7 @@ document.getElementById('monthSelect').addEventListener('change', e => {
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-info">
-      <h2>🎭 コスモホール</h2>
+      <h2>🎭 testホール</h2>
       <div class="footer-info-list">
         <div class="footer-info-row">
           <span class="footer-info-icon">📍</span>
@@ -1597,7 +1597,7 @@ document.getElementById('monthSelect').addEventListener('change', e => {
     <div class="footer-map" id="footerMap"></div>
   </div>
   <div class="footer-bottom">
-    <span>© 2026 コスモホール All Rights Reserved.</span>
+    <span>© 2026 testホール All Rights Reserved.</span>
   </div>
 </footer>
 
@@ -1622,7 +1622,7 @@ window.addEventListener('load', function() {
   });
   L.marker([MAP_LAT, MAP_LNG], { icon: markerIcon })
     .addTo(map)
-    .bindPopup('<b>交流文化館浅科</b><br>長野県佐久市八幡229番地')
+    .bindPopup('<b>testホール</b><br>●●県●●市●●町')
     .openPopup();
 
   setTimeout(function() { map.invalidateSize(); }, 300);
