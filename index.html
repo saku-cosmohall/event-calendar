@@ -1021,7 +1021,7 @@ const CONFIG = {
 
 // スプシの列インデックス（0始まり・1行目はヘッダー行）
 // A:イベント名, B:開始日, C:終了日, D:時間, E:会場, F:概要, G:DriveファイルID, H:申込URL, I:カテゴリ番号
-const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, IMG:6, URL:7, CAT:8 };
+const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, IMG:6, URL:7, CAT:8, PUB:11 };
 
 
 // ---- グローバル変数 ----
@@ -1062,6 +1062,7 @@ function parseCSV(text) {
   for (let i = 1; i < lines.length; i++) {
     const cols = parseCSVLine(lines[i]);
     if (!cols[COL.NAME]) continue;
+    if ((cols[COL.PUB] || '').toUpperCase() !== 'TRUE') continue;
     result.push({
       name:  cols[COL.NAME]  || '',
       start: cols[COL.START] || '',
