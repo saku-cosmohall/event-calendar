@@ -1156,7 +1156,7 @@ function openModal(idx) {
 
   const fileId = ev.imgId.trim();
   const imgUrl = fileId
-    ? `https://drive.usercontent.google.com/download?id=${fileId}&export=view&authuser=0`
+    ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`
     : null;
 
   const dateStr = (ev.end && ev.end !== ev.start)
