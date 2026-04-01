@@ -5,238 +5,270 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>イベントカレンダー</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Madimi+One&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f4f3ee;
+      --bg: #FFF4D6;
+      --bg-alt: #F6E27A;
+      --bg-header: #FEFFEA;
+      --bg-accent: #CDD866;
       --surface: #ffffff;
-      --primary: #1b3a5c;
-      --primary-mid: #254e7a;
-      --accent: #c8954a;
-      --accent2: #e6b36a;
-      --text: #2c2c2c;
-      --muted: #999;
-      --border: #dedad2;
-      --today-ring: #c8954a;
-      --sun: #c94040;
-      --sat: #3a72b5;
+      --primary: #5E4B37;
+      --text: #5E4B37;
+      --muted: #aaa;
+      --border: #e8e0c8;
+      --today-ring: #f08080;
+      --sun: #e05555;
+      --sat: #5588cc;
       --shadow-sm: 0 2px 10px rgba(0,0,0,0.06);
-      --shadow-md: 0 8px 32px rgba(0,0,0,0.12);
-      --shadow-lg: 0 20px 60px rgba(0,0,0,0.2);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.10);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.18);
       --radius: 16px;
 
       /* イベントカテゴリカラー */
-      --cat0: #3b6ea5;   /* 音楽 */
-      --cat1: #c8954a;   /* 演劇・ダンス */
-      --cat2: #5a8c5a;   /* 講座・ワークショップ */
-      --cat3: #9a5a8c;   /* 展示・その他 */
+      --cat0: #e8836e;   /* 音楽 */
+      --cat1: #82b84a;   /* 演劇・ダンス */
+      --cat2: #6aabe0;   /* 講座・ワークショップ */
+      --cat3: #c98ad0;   /* 展示・その他 */
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Noto Sans JP', sans-serif;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-    }
-
-    /* ===== HEADER ===== */
-    header {
-      background: var(--primary);
-      color: #fff;
-      padding: 2.5rem 1rem 2rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    header::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(200,149,74,0.18) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    header h1 {
-      font-family: 'Shippori Mincho', serif;
-      font-size: clamp(1.4rem, 4vw, 2rem);
-      letter-spacing: 0.12em;
-      position: relative;
-    }
-    header p {
-      font-size: 0.82rem;
-      opacity: 0.65;
-      margin-top: 0.4rem;
-      letter-spacing: 0.05em;
-      position: relative;
+      padding-top: 64px;
     }
 
     /* ===== LEGEND ===== */
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1.2rem;
-      justify-content: center;
-      padding: 0.9rem 1rem;
-      background: var(--primary-mid);
+
+    /* ===== HEADER ===== */
+    header {
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      padding: 0.75rem 1.2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      border-bottom: 1px solid transparent;
+      transition: background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
     }
-    .legend-item {
+    header.scrolled {
+      background: rgba(255, 254, 234, 0.55);
+      backdrop-filter: blur(14px) saturate(160%);
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 2px 20px rgba(94, 75, 55, 0.1);
+    }
+    .header-inner {
+      position: relative;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.85);
-    }
-    .legend-dot {
-      width: 10px; height: 10px;
-      border-radius: 3px;
-    }
-
-    /* ===== CALENDAR WRAP ===== */
-    .wrap {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    /* ===== MONTH NAV ===== */
-    .month-nav {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      justify-content: space-between;
+      max-width: 960px;
+      margin: 0 auto;
       gap: 1rem;
-      margin-bottom: 1.2rem;
-      flex-wrap: wrap;
     }
-    .nav-btn {
-      background: var(--surface);
-      border: 2px solid var(--primary);
-      color: var(--primary);
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-      box-shadow: var(--shadow-sm);
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .header-cat-icon {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
       flex-shrink: 0;
     }
-    .nav-btn:hover { background: var(--primary); color: #fff; }
-    .month-selects {
+    .header-texts {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      flex-direction: column;
     }
-    .nav-select {
-      font-family: 'Shippori Mincho', serif;
-      font-size: 1.1rem;
-      color: var(--primary);
-      border: 2px solid var(--primary);
-      border-radius: 8px;
-      padding: 0.3rem 0.6rem;
-      background: var(--surface);
-      cursor: pointer;
-      outline: none;
-      box-shadow: var(--shadow-sm);
-      transition: border-color 0.2s;
-    }
-    .nav-select:focus { border-color: var(--accent); }
-    .nav-select-label {
-      font-family: 'Shippori Mincho', serif;
-      font-size: 1.1rem;
-      color: var(--primary);
-      font-weight: 600;
-    }
-
-    /* ===== CALENDAR ===== */
-    .calendar {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-md);
-      overflow: hidden;
-    }
-    .day-headers {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      background: var(--primary);
-    }
-    .day-header {
-      padding: 0.7rem 0.4rem;
-      text-align: center;
-      color: rgba(255,255,255,0.9);
-      font-size: 0.78rem;
-      font-weight: 500;
+    .header-sub {
+      font-size: 0.68rem;
+      color: #999;
       letter-spacing: 0.04em;
+      line-height: 1.2;
     }
-    .day-header:first-child { color: #ffaaaa; }
-    .day-header:last-child  { color: #aaccff; }
-
-    .days-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 1px;
-      background: var(--border);
+    .header-name {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      color: #5E4B37;
+      letter-spacing: 0.08em;
+      line-height: 1.3;
     }
-    .day-cell {
-      background: var(--surface);
-      min-height: 108px;
-      padding: 0.45rem 0.4rem 0.5rem;
-      position: relative;
-      transition: background 0.15s;
-    }
-    .day-cell.other-month { background: #f9f8f5; }
-    .day-cell.other-month .day-num { opacity: 0.3; }
-    .day-cell.today { background: #fff8ef; }
-
-    .day-num {
-      font-size: 0.82rem;
-      font-weight: 500;
+    .header-btn {
       display: inline-flex;
-      align-items: center; justify-content: center;
-      width: 26px; height: 26px;
-      border-radius: 50%;
+      align-items: center;
+      gap: 0.3rem;
+      background: linear-gradient(to right, #D3689E, #F7C8D6);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .header-btn:hover { background: linear-gradient(to right, #b8508a, #f0afc4); transform: translateY(-1px); }
+
+    /* ===== TODAY'S EVENT ===== */
+    .today-section {
+      background: var(--bg);
+      padding: 2.5rem 1.5rem 3rem;
+    }
+    .today-inner {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .today-title-en, .today-title-ja, .today-list, .today-no-events {
+      width: 100%;
+    }
+    .today-title-en {
+      font-family: 'Madimi One', sans-serif;
+      font-size: clamp(1.8rem, 7vw, 2.6rem);
+      color: #B3C399;
+      letter-spacing: 0.05em;
       line-height: 1;
     }
-    .day-cell.today .day-num {
-      background: var(--accent);
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(200,149,74,0.4);
+    .today-title-ja {
+      font-size: 0.82rem;
+      color: var(--text);
+      margin-top: 0.2rem;
+      margin-bottom: 1.4rem;
+      letter-spacing: 0.06em;
     }
-    .day-cell.sunday .day-num,
-    .col-sun .day-num { color: var(--sun); }
-    .day-cell.saturday .day-num,
-    .col-sat .day-num { color: var(--sat); }
-
-    /* Event chips */
-    .event-chip {
-      display: block;
-      font-size: 0.68rem;
-      padding: 2px 6px;
-      border-radius: 5px;
-      margin-top: 3px;
+    .today-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .today-card {
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.9rem 1rem 0.9rem 1.2rem;
       cursor: pointer;
-      white-space: normal;
-      overflow: hidden;
-      word-break: break-all;
-      color: #fff;
-      font-weight: 500;
-      transition: opacity 0.15s, transform 0.15s;
-      letter-spacing: 0.02em;
+      transition: box-shadow 0.2s, transform 0.15s;
     }
-    .event-chip:hover { opacity: 0.82; transform: translateY(-1px); }
-    .event-chip.unpublished { opacity: 0.55; border: 1.5px dashed rgba(255,255,255,0.6); }
-    .cat-0 { background: var(--cat0); }
-    .cat-1 { background: var(--cat1); }
-    .cat-2 { background: var(--cat2); }
-    .cat-3 { background: var(--cat3); }
-
-    .more-badge {
-      font-size: 0.62rem;
+    .today-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+    .today-date {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      min-width: 52px;
+      align-self: stretch;
+      line-height: 1.1;
+      padding: 0 0.7rem;
+      background: linear-gradient(to bottom, #FCFFD7, #FEFFEA);
+      border-radius: 12px 0 0 12px;
+      margin: -0.9rem 0 -0.9rem -1.2rem;
+    }
+    .today-date-month {
+      font-size: 0.7rem;
       color: var(--muted);
-      margin-top: 3px;
-      padding-left: 4px;
+    }
+    .today-date-day {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+    .today-date-dow {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .today-event-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+    }
+    .today-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      color: #fff;
+      align-self: flex-start;
+    }
+    .today-event-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .today-event-meta {
+      display: flex;
+      gap: 0.8rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+    .today-arrow {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(to right, #D3689E, #F7C8D6);
+      color: #fff;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .today-no-events {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .today-cal-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 1.6rem;
+      background: linear-gradient(to right, #D3689E, #F7C8D6);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: filter 0.2s, transform 0.15s;
+    }
+    .today-cal-btn:hover { filter: brightness(0.92); transform: translateY(-1px); }
+
+    .today-badge,
+    .modal-cat-badge {
+      background: linear-gradient(to bottom, #B3C399, #CDD866) !important;
     }
 
     /* ===== MODAL ===== */
@@ -259,7 +291,7 @@
       pointer-events: all;
     }
     .modal {
-      background: #fff;
+      background: linear-gradient(to bottom, #FEFFEA, #FCFFD9);
       border-radius: var(--radius);
       max-width: 520px;
       width: 100%;
@@ -332,7 +364,7 @@
       margin: 1.2rem 1.4rem 0.5rem;
     }
     .modal-title {
-      font-family: 'Shippori Mincho', serif;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
       font-size: 1.35rem;
       color: var(--primary);
       line-height: 1.5;
@@ -410,532 +442,383 @@
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 640px) {
-      .wrap { padding: 0 0.5rem; }
-      .day-cell { min-height: 52px; padding: 0.3rem 0.2rem; }
-      .day-num { width: 20px; height: 20px; font-size: 0.7rem; }
-      .event-chip { display: none; } /* スマホはドットのみ */
-      .more-badge { display: none; }
-      .dot-row { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 3px; }
-      .event-dot {
-        width: 7px; height: 7px;
-        border-radius: 50%;
-        cursor: pointer;
-      }
-      .day-cell.has-events { cursor: pointer; }
-      .nav-select { font-size: 0.95rem; padding: 0.25rem 0.4rem; }
-      .nav-select-label { font-size: 0.95rem; }
-      .nav-btn { width: 34px; height: 34px; font-size: 1rem; }
-    }
-    @media (min-width: 641px) {
-      .dot-row { display: none; }
-    }
-
-    /* ===== FACILITIES ===== */
-    .facilities-section {
-      background: var(--primary);
-      padding: 3.5rem 1rem;
-      margin-top: 3rem;
-    }
-    .facilities-inner {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    .facilities-heading {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-    .facilities-heading h2 {
-      font-family: 'Shippori Mincho', serif;
-      font-size: clamp(1.4rem, 3vw, 1.9rem);
-      color: #fff;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.5rem;
-    }
-    .facilities-heading p {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.6);
-      letter-spacing: 0.05em;
-    }
-    .facilities-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
-    .facility-card {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 1.4rem 1.2rem;
-      transition: background 0.2s, transform 0.2s;
-    }
-    .facility-card:hover {
-      background: rgba(255,255,255,0.12);
-      transform: translateY(-3px);
-    }
-    .facility-icon {
-      font-size: 1.8rem;
-      margin-bottom: 0.8rem;
-    }
-    .facility-name {
-      font-family: 'Shippori Mincho', serif;
-      font-size: 1rem;
-      color: #fff;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      letter-spacing: 0.04em;
-    }
-    .facility-cap {
-      display: inline-block;
-      font-size: 0.72rem;
-      background: var(--accent);
-      color: #fff;
-      padding: 2px 8px;
-      border-radius: 20px;
-      margin-bottom: 0.7rem;
-      font-weight: 700;
-    }
-    .facility-desc {
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.65);
-      line-height: 1.7;
-    }
-
-    @media (max-width: 640px) {
-      .facilities-grid { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 400px) {
-      .facilities-grid { grid-template-columns: 1fr; }
-    }
-
-    /* ===== FACILITIES ===== */
-    .facilities-section {
-      background: var(--bg);
-      padding: 3.5rem 1rem;
-      margin-top: 3rem;
-    }
-    .facilities-inner {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    .facilities-heading {
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-    .facilities-heading h2 {
-      font-family: 'Shippori Mincho', serif;
-      font-size: clamp(1.4rem, 3vw, 1.9rem);
-      color: var(--primary);
-      letter-spacing: 0.1em;
-      margin-bottom: 0.5rem;
-    }
-    .facilities-heading p {
-      font-size: 0.85rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-    .facilities-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.2rem;
-    }
-    .facility-card {
-      background: var(--surface);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      transition: box-shadow 0.2s, transform 0.2s;
-      display: flex;
-      flex-direction: column;
-    }
-    .facility-card:hover {
-      box-shadow: var(--shadow-md);
-      transform: translateY(-4px);
-    }
-    /* 写真エリア */
-    .facility-photo {
-      position: relative;
-      height: 180px;
-      overflow: hidden;
-      background: #d0dce8;
-    }
-    .facility-photo img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.4s ease;
-    }
-    .facility-card:hover .facility-photo img {
-      transform: scale(1.05);
-    }
-    /* 写真がない場合のプレースホルダー */
-    .facility-photo-placeholder {
-      width: 100%; height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #c5d8e8, #a8c4d8);
-      color: rgba(27,58,92,0.4);
-      font-size: 2.5rem;
-      gap: 0.4rem;
-    }
-    .facility-photo-placeholder span {
-      font-size: 0.72rem;
-      letter-spacing: 0.05em;
-    }
-    /* タグ */
-    .facility-tags {
-      position: absolute;
-      top: 0.7rem;
-      left: 0.7rem;
-      display: flex;
-      gap: 0.4rem;
-      flex-wrap: wrap;
-    }
-    .facility-tag {
-      background: rgba(255,255,255,0.92);
-      color: var(--primary);
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 20px;
-      backdrop-filter: blur(4px);
-      letter-spacing: 0.03em;
-    }
-    /* 本文 */
-    .facility-body {
-      padding: 1.1rem 1.2rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .facility-name {
-      font-family: 'Shippori Mincho', serif;
-      font-size: 1.05rem;
-      color: var(--primary);
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      letter-spacing: 0.03em;
-      line-height: 1.4;
-    }
-    .facility-desc {
-      font-size: 0.8rem;
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 0.9rem;
-      flex: 1;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .facility-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      margin-bottom: 1rem;
-    }
-    .facility-meta-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.78rem;
-      color: #555;
-    }
-    .facility-meta-icon { font-size: 0.9rem; }
-    .facility-btn {
-      display: block;
-      width: 100%;
-      padding: 0.7rem;
-      background: #f0eff8;
-      color: var(--primary);
-      border: none;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      letter-spacing: 0.04em;
-      transition: background 0.2s;
-      font-family: inherit;
-      text-decoration: none;
-      box-sizing: border-box;
-    }
-    .facility-btn:hover { background: #dddcf0; }
-
-    @media (max-width: 760px) {
-      .facilities-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .facilities-grid { grid-template-columns: 1fr; }
-      .facility-photo { height: 200px; }
-    }
-
-    /* ===== FOOTER ===== */
-    .site-footer {
-      background: var(--primary);
-      color: rgba(255,255,255,0.85);
-      margin-top: 4rem;
-      padding: 3rem 1rem 1.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .site-footer::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 30% 50%, rgba(200,149,74,0.12) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .footer-inner {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      position: relative;
-    }
-    .footer-info h2 {
-      font-family: 'Shippori Mincho', serif;
-      font-size: 1.3rem;
-      color: #fff;
-      margin-bottom: 1.2rem;
-      letter-spacing: 0.08em;
-    }
-    .footer-info-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-      margin-bottom: 1.4rem;
-    }
-    .footer-info-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.7rem;
-      font-size: 0.88rem;
-      line-height: 1.6;
-    }
-    .footer-info-icon {
-      font-size: 1rem;
-      margin-top: 1px;
-      flex-shrink: 0;
-    }
-    .footer-access {
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-      padding: 0.8rem 1rem;
-      font-size: 0.82rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .footer-map {
-      border-radius: 12px;
-      overflow: hidden;
-      height: 220px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    }
-    .footer-map iframe {
-      width: 100%; height: 100%;
-      border: none; display: block;
-    }
-    .footer-bottom {
-      max-width: 1000px;
-      margin: 2rem auto 0;
-      padding-top: 1.2rem;
-      border-top: 1px solid rgba(255,255,255,0.15);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.5);
-      position: relative;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    @media (max-width: 640px) {
-      .footer-inner { grid-template-columns: 1fr; }
-      .footer-map { height: 180px; }
-    }
-
-    /* ===== EVENT LIST ===== */
-    .event-list-wrap {
-      margin-top: 2rem;
-    }
-    .event-list-title {
-      font-family: 'Shippori Mincho', serif;
-      font-size: 1.2rem;
-      color: var(--primary);
-      margin-bottom: 1rem;
-      padding-left: 0.5rem;
-      border-left: 4px solid var(--accent);
-    }
-    .event-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
-    .event-list-item {
-      background: var(--surface);
-      border-radius: 12px;
-      padding: 1rem 1.2rem;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      cursor: pointer;
-      transition: box-shadow 0.2s, transform 0.15s;
-      border-left: 4px solid var(--primary);
-    }
-    .event-list-item:hover {
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
-    }
-    .event-list-item.unpublished {
-      opacity: 0.6;
-      border-left-style: dashed;
-    }
-    .event-list-date {
-      min-width: 80px;
-      text-align: center;
-      background: var(--primary);
-      color: #fff;
-      border-radius: 8px;
-      padding: 0.4rem 0.5rem;
-      font-size: 0.78rem;
-      line-height: 1.5;
-      flex-shrink: 0;
-    }
-    .event-list-date .date-month { font-size: 0.7rem; opacity: 0.8; }
-    .event-list-date .date-day   { font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
-    .event-list-date .date-dow   { font-size: 0.68rem; opacity: 0.8; }
-    .event-list-body { flex: 1; min-width: 0; }
-    .event-list-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 0.3rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .event-list-meta {
-      font-size: 0.78rem;
-      color: var(--muted);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem 0.8rem;
-    }
-    .event-list-empty {
-      text-align: center;
-      padding: 2rem;
-      color: var(--muted);
-      font-size: 0.9rem;
+      .day-cell { min-height: 72px; }
+      .event-chip { font-size: 0.6rem; padding: 1px 4px; }
+      .day-num { width: 22px; height: 22px; font-size: 0.75rem; }
+      .month-title { font-size: 1.2rem; }
+      .modal { max-height: 95vh; }
     }
 
     /* ===== HERO ===== */
     .hero {
       position: relative;
-      height: 100svh;
-      min-height: 500px;
-      max-height: 800px;
+      overflow: hidden;
+      min-height: 72vw;
+      max-height: 520px;
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;
+      padding: 2rem 1.5rem 3rem;
+    }
+    .hero-deco {
+      position: absolute;
+      top: 0.2rem;
+      left: 0;
+      font-family: 'Madimi One', sans-serif;
+      font-size: clamp(3rem, 18vw, 8rem);
+      font-weight: 400;
+      background: linear-gradient(to right, #C2DFC2 0%, #F5E0AD 38%, #F2BAA2 67%, #BAC0DD 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+      opacity: 0.5;
+      filter: drop-shadow(0px 2px 2px rgba(94, 75, 55, 0.25));
+      letter-spacing: 0.04em;
+      pointer-events: auto;
+      white-space: nowrap;
+      user-select: none;
+      line-height: 1;
+      display: flex;
+      animation: marquee 30s linear infinite;
+      cursor: pointer;
+    }
+    .hero-deco span {
+      display: inline-flex;
+      align-items: center;
+    }
+    .hero-deco-icon {
+      height: 0.9em;
+      width: auto;
+      margin: 0 0.5em;
+      opacity: 1;
+      -webkit-text-fill-color: initial;
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .hero-img-wrap {
+      position: absolute;
+      top: 0;
+      right: -5%;
+      width: 72vw;
+      max-width: 380px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #e8dfd0;
+    }
+    .hero-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      overflow: hidden;
-      color: #fff;
+      color: #bbb;
+      font-size: 0.8rem;
     }
-    /* ★ 写真をここに設定してね！
-       background-image: url('your-photo.jpg'); に変えるだけ */
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background-image: url('hero.jpg');
-      background-size: cover;
-      background-position: center;
-      background-color: #1b3a5c; /* 写真がない場合のフォールバック */
-      transform: scale(1.05);
-      transition: transform 8s ease;
-    }
-    .hero-bg.loaded { transform: scale(1); }
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(10,20,40,0.35) 0%,
-        rgba(10,20,40,0.55) 60%,
-        rgba(10,20,40,0.75) 100%
-      );
-    }
-    .hero-content {
+    .hero-copy {
       position: relative;
-      z-index: 2;
-      padding: 0 1.5rem;
-      animation: heroFadeUp 1s ease both;
-    }
-    @keyframes heroFadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .hero-label {
-      display: inline-block;
-      font-size: 0.75rem;
-      letter-spacing: 0.2em;
-      border: 1px solid rgba(255,255,255,0.5);
-      padding: 0.3rem 1rem;
-      border-radius: 20px;
-      margin-bottom: 1.4rem;
-      opacity: 0.85;
-    }
-    .hero-title {
-      font-family: 'Shippori Mincho', serif;
-      font-size: clamp(2rem, 6vw, 3.5rem);
-      line-height: 1.4;
-      letter-spacing: 0.1em;
-      margin-bottom: 1rem;
-      text-shadow: 0 2px 20px rgba(0,0,0,0.4);
-    }
-    .hero-sub {
-      font-size: clamp(0.85rem, 2vw, 1rem);
-      opacity: 0.85;
+      font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+      font-weight: 700;
+      color: var(--text);
       line-height: 1.8;
+      letter-spacing: 0.06em;
+      z-index: 1;
+      max-width: 55%;
+    }
+
+    @media (min-width: 640px) {
+      .hero {
+        min-height: 400px;
+        padding: 3rem 3rem 4rem;
+      }
+      .hero-img-wrap {
+        width: 50vw;
+        max-width: 440px;
+        right: -2%;
+        top: -5%;
+      }
+      .hero-copy {
+        font-size: 1.5rem;
+        max-width: 45%;
+      }
+    }
+
+    /* ===== FACILITIES ===== */
+    .facilities-section {
+      background: var(--bg);
+      padding: 0;
+      overflow: hidden;
+    }
+    .facilities-green {
+      background: #EFF8D2;
+      padding: 2.5rem 0 2.5rem;
+      border-radius: 50% 50% 50% 50% / 40px 40px 40px 40px;
+      position: relative;
+      z-index: 1;
+    }
+    .facilities-head {
+      padding: 0 1.5rem 1.4rem;
+      text-align: center;
+    }
+    .facilities-title-en {
+      font-family: 'Madimi One', sans-serif;
+      font-size: clamp(1.8rem, 7vw, 2.6rem);
+      color: #B3C399;
       letter-spacing: 0.05em;
-      max-width: 480px;
+      line-height: 1;
+    }
+    .facilities-title-ja {
+      font-size: 0.82rem;
+      color: var(--text);
+      margin-top: 0.2rem;
+      letter-spacing: 0.06em;
+    }
+    .facilities-scroll {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 0.5rem 1.5rem 1.5rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .facilities-scroll::-webkit-scrollbar { display: none; }
+    .facility-card {
+      flex-shrink: 0;
+      width: 72vw;
+      max-width: 280px;
+      scroll-snap-align: start;
+      background: rgba(255,255,255,0.7);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .facility-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #dde8c8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aab89a;
+      font-size: 0.78rem;
+    }
+    .facility-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .facility-body {
+      padding: 0.8rem 0.9rem 1rem;
+    }
+    .facility-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+    .facility-desc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .facilities-cta {
+      background: url('images/honoka-gaikan.jpg') center/cover no-repeat;
+      padding: 6rem 1.5rem;
+      text-align: center;
+      position: relative;
+      margin-top: -40px;
+      z-index: 0;
+    }
+    .facilities-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+    }
+    .facilities-cta-text,
+    .facilities-cta-btn {
+      position: relative;
+      z-index: 1;
+    }
+    .facilities-cta-text {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
+    }
+    .facilities-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: linear-gradient(to right, #D3689E, #F7C8D6);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.6rem 1.6rem;
+      border-radius: 999px;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: filter 0.2s, transform 0.15s;
+    }
+    .facilities-cta-btn:hover { filter: brightness(0.92); transform: translateY(-1px); }
+
+    @media (min-width: 768px) {
+      .facility-card {
+        width: 260px;
+      }
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      background: var(--bg);
+      padding: 3rem 1.5rem 2rem;
+      margin-top: 0;
+      border-top: 1px solid rgba(205, 216, 102, 0.4);
+    }
+    .footer-inner {
+      max-width: 900px;
       margin: 0 auto;
     }
-    .hero-scroll {
-      position: absolute;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
+
+    /* --- 上段：1カラム中央揃え --- */
+    .footer-top {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.7rem;
+      margin-bottom: 1.6rem;
+    }
+    .footer-brand {
+      text-align: center;
+      margin-bottom: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .footer-plant {
+      width: 48px;
+      height: auto;
+      opacity: 0.85;
+      margin-bottom: 0.5rem;
+    }
+    .footer-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.3rem;
+    }
+    .footer-name {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: clamp(1.8rem, 6vw, 2.6rem);
+      font-weight: 700;
+      color: #5E4B37;
       letter-spacing: 0.15em;
-      opacity: 0.7;
-      cursor: pointer;
-      animation: heroFadeUp 1s 0.5s ease both;
-      transition: opacity 0.2s;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
     }
-    .hero-scroll:hover { opacity: 1; }
-    .hero-scroll-line {
-      width: 1px;
-      height: 40px;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
-      animation: scrollLine 1.5s ease-in-out infinite;
+    .footer-slippers-note {
+      font-size: 0.78rem;
+      color: var(--muted);
     }
-    @keyframes scrollLine {
-      0%   { transform: scaleY(0); transform-origin: top; }
-      50%  { transform: scaleY(1); transform-origin: top; }
-      51%  { transform: scaleY(1); transform-origin: bottom; }
-      100% { transform: scaleY(0); transform-origin: bottom; }
+    .footer-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+    }
+    .footer-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      width: 100%;
+    }
+    .footer-cat-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+    }
+    .footer-cat-line {
+      flex: 1;
+      height: 1px;
+      background: #BA9E81;
+    }
+    .footer-cat-img {
+      width: clamp(80px, 22vw, 130px);
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .footer-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.83rem;
+      color: #5E4B37;
+      line-height: 1.7;
+      text-align: center;
+    }
+    .footer-info a {
+      color: #5E4B37;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .footer-address {
+      font-size: 0.83rem;
+      color: #5E4B37;
+    }
+    .footer-map {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .footer-map iframe {
+      display: block;
+      width: 100%;
+      height: 220px;
+      border: none;
+    }
+    .footer-copy {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    /* --- PC：2カラム --- */
+    @media (min-width: 768px) {
+      .footer-brand {
+        text-align: left;
+      }
+      .footer-divider {
+        margin: 1.2rem 0;
+      }
+      .footer-bottom {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 2rem;
+      }
+      .footer-info {
+        flex: 0 0 50%;
+        align-items: flex-start;
+        text-align: left;
+      }
+      .footer-map {
+        flex: 0 0 50%;
+      }
+      .footer-map iframe {
+        height: 280px;
+      }
     }
 
     /* ===== DEMO BANNER ===== */
@@ -958,193 +841,156 @@
   🛠 デモ表示中（サンプルデータ）｜ 本番では <code>CONFIG.SHEET_CSV_URL</code> にスプレッドシートのCSV URLを設定してください
 </div>
 
-<!-- プレビューバナー -->
-<div class="demo-banner" id="previewBanner" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);display:none">
-  👀 プレビューモード｜非公開イベントを含む全イベントを表示しています
-</div>
-
-<!-- ヒーローセクション -->
-<section class="hero" id="hero">
-  <div class="hero-bg" id="heroBg"></div>
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <div class="hero-label">COSMO HALL</div>
-    <h1 class="hero-title">
-      音楽と文化が<br>ここに集まる場所
-    </h1>
-    <p class="hero-sub">
-      testホールは、地域の皆さまとともに<br>
-      豊かな文化・芸術の時間をつくる施設です。
-    </p>
-  </div>
-  <div class="hero-scroll" id="heroScroll">
-    <span>SCROLL</span>
-    <div class="hero-scroll-line"></div>
-  </div>
-</section>
-
 <header>
-  <h1 id="hallName">🎭 ホールイベントカレンダー</h1>
-  <p>最新のイベント情報をご確認ください</p>
+  <div class="header-inner">
+    <div class="header-brand">
+      <img class="header-cat-icon" src="images/header-cat.png" alt="">
+      <div class="header-texts">
+        <span class="header-sub">佐久市交流文化館浅科</span>
+        <span class="header-name">穂の香ホール</span>
+      </div>
+    </div>
+    <a class="header-btn" href="calendar.html">イベントカレンダー &rsaquo;</a>
+  </div>
 </header>
 
-<div class="legend">
-  <div class="legend-item"><div class="legend-dot" style="background:var(--cat0)"></div>音楽</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--cat1)"></div>演劇・ダンス</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--cat2)"></div>講座・WS</div>
-  <div class="legend-item"><div class="legend-dot" style="background:var(--cat3)"></div>展示・その他</div>
-</div>
-
-<div class="wrap">
-  <div class="month-nav">
-    <button class="nav-btn" id="prevBtn">&#8249;</button>
-    <div class="month-selects">
-      <select class="nav-select" id="yearSelect"></select>
-      <span class="nav-select-label">年</span>
-      <select class="nav-select" id="monthSelect">
-        <option value="0">1月</option><option value="1">2月</option><option value="2">3月</option>
-        <option value="3">4月</option><option value="4">5月</option><option value="5">6月</option>
-        <option value="6">7月</option><option value="7">8月</option><option value="8">9月</option>
-        <option value="9">10月</option><option value="10">11月</option><option value="11">12月</option>
-      </select>
-      <span class="nav-select-label">月</span>
-    </div>
-    <button class="nav-btn" id="nextBtn">&#8250;</button>
+<!-- ヒーローセクション -->
+<section class="hero">
+  <div class="hero-deco">
+    <span>HONOKA HALL<img src="images/honoka-icon.png" alt="" class="hero-deco-icon"></span>
+    <span>HONOKA HALL<img src="images/honoka-icon.png" alt="" class="hero-deco-icon"></span>
   </div>
-  <div class="calendar" id="calendar">
-    <div class="loading-state">
-      <div class="loading-spinner"></div>
-      <p>イベント情報を読み込んでいます…</p>
-    </div>
+  <div class="hero-img-wrap">
+    <!-- ヒーロー画像：images/hero.jpg などに差し替えてください -->
+    <div class="hero-img-placeholder">写真をここに</div>
   </div>
+  <p class="hero-copy">ゆったりと<br>やさしい時間を<br>過ごしてほしい</p>
+</section>
 
-  <!-- イベント一覧 -->
-  <div class="event-list-wrap" id="eventListWrap"></div>
-</div>
-
-<!-- 施設紹介 -->
-<section class="facilities-section">
-  <div class="facilities-inner">
-    <div class="facilities-heading">
-      <h2>施設のご案内</h2>
-      <p>testホールのさまざまな施設をご利用いただけます</p>
+<!-- TODAY'S EVENT -->
+<section class="today-section">
+  <div class="today-inner">
+    <p class="today-title-en">TODAY'S EVENT</p>
+    <p class="today-title-ja">本日のイベント</p>
+    <div class="today-list" id="todayList"></div>
+    <div class="today-no-events" id="todayNoEvents" style="display:none">
+      <p>本日のイベントはありません</p>
     </div>
-    <div class="facilities-grid">
-
-      <div class="facility-card">
-        <div class="facility-photo">
-          <!-- ★ 写真差し替え：img タグの src を変更 or 下のプレースホルダーを削除 -->
-          <div class="facility-photo-placeholder">🎭<span>PHOTO</span></div>
-          <div class="facility-tags">
-            <span class="facility-tag">メインホール</span>
-            <span class="facility-tag">400席</span>
-          </div>
-        </div>
-        <div class="facility-body">
-          <div class="facility-name">testホール</div>
-          <p class="facility-desc">自然光を活かした明るい多目的ホール。コンサート・講演会・演劇など幅広く活用できます。</p>
-          <div class="facility-meta">
-            <div class="facility-meta-row"><span class="facility-meta-icon">🪑</span>400席（前方昇降式・ロールバック・2階固定席）</div>
-            <div class="facility-meta-row"><span class="facility-meta-icon">🕐</span>9:00〜22:00</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="facility-card">
-        <div class="facility-photo">
-          <div class="facility-photo-placeholder">🎵<span>PHOTO</span></div>
-          <div class="facility-tags">
-            <span class="facility-tag">練習・リハーサル</span>
-          </div>
-        </div>
-        <div class="facility-body">
-          <div class="facility-name">音楽室</div>
-          <p class="facility-desc">演奏練習やリハーサルに最適な音楽室。ピアノを備え、本番前の仕上げにもご利用いただけます。</p>
-          <div class="facility-meta">
-            <div class="facility-meta-row"><span class="facility-meta-icon">🎹</span>ピアノあり</div>
-            <div class="facility-meta-row"><span class="facility-meta-icon">🕐</span>9:00〜22:00</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="facility-card">
-        <div class="facility-photo">
-          <div class="facility-photo-placeholder">👶<span>PHOTO</span></div>
-          <div class="facility-tags">
-            <span class="facility-tag">子連れ歓迎</span>
-            <span class="facility-tag">ファミリー</span>
-          </div>
-        </div>
-        <div class="facility-body">
-          <div class="facility-name">親子室</div>
-          <p class="facility-desc">小さなお子様連れでも気兼ねなくホールイベントを鑑賞できる小部屋。音声はスピーカーでお届け。</p>
-          <div class="facility-meta">
-            <div class="facility-meta-row"><span class="facility-meta-icon">🔊</span>スピーカーで音声視聴</div>
-            <div class="facility-meta-row"><span class="facility-meta-icon">👁</span>生の舞台が見られます</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="facility-card">
-        <div class="facility-photo">
-          <div class="facility-photo-placeholder">☕<span>PHOTO</span></div>
-          <div class="facility-tags">
-            <span class="facility-tag">交流スペース</span>
-          </div>
-        </div>
-        <div class="facility-body">
-          <div class="facility-name">談話喫茶コーナー</div>
-          <p class="facility-desc">来館者同士が気軽に交流できる憩いのスペース。イベント前後のひとときをゆっくりお過ごしください。</p>
-          <div class="facility-meta">
-            <div class="facility-meta-row"><span class="facility-meta-icon">🌿</span>自然光が差し込む明るい空間</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="facility-card">
-        <div class="facility-photo">
-          <div class="facility-photo-placeholder">📚<span>PHOTO</span></div>
-          <div class="facility-tags">
-            <span class="facility-tag">併設</span>
-          </div>
-        </div>
-        <div class="facility-body">
-          <div class="facility-name">図書館</div>
-          <p class="facility-desc">館内に図書館を併設。文化的な活動の拠点として、学びと交流の場を提供しています。</p>
-          <div class="facility-meta">
-            <div class="facility-meta-row"><span class="facility-meta-icon">📖</span>どなたでもご利用いただけます</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="facility-card">
-        <div class="facility-photo">
-          <div class="facility-photo-placeholder">🌿<span>PHOTO</span></div>
-          <div class="facility-tags">
-            <span class="facility-tag">自然光</span>
-            <span class="facility-tag">緑に囲まれた立地</span>
-          </div>
-        </div>
-        <div class="facility-body">
-          <div class="facility-name">周辺環境</div>
-          <p class="facility-desc">自然の景色に美しくとけ込む建物。自然光を活かした設計で訪れるだけで心が和む空間です。</p>
-          <div class="facility-meta">
-            <div class="facility-meta-row"><span class="facility-meta-icon">🚗</span>佐久ICから車で15分</div>
-            <div class="facility-meta-row"><span class="facility-meta-icon">🚃</span>佐久平駅から車で10分</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <div style="text-align:center;margin-top:2rem">
-      <a href="https://www.city.saku.nagano.jp/bunka/sakubun/koryubunka.html" target="_blank" rel="noopener"
-        style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.8rem 2rem;background:var(--primary);color:#fff;border-radius:30px;font-size:0.88rem;font-weight:700;text-decoration:none;letter-spacing:0.05em;transition:opacity 0.2s"
-        onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-        📋 詳しい施設情報はtest市ホームページへ
-      </a>
-    </div>
+    <a class="today-cal-btn" href="calendar.html">イベントカレンダー &rsaquo;</a>
   </div>
 </section>
+
+<!-- FACILITIES -->
+<section class="facilities-section">
+  <div class="facilities-green">
+  <div class="facilities-head">
+    <p class="facilities-title-en">FACILITIES</p>
+    <p class="facilities-title-ja">ホール内の施設</p>
+  </div>
+  <div class="facilities-scroll">
+    <div class="facility-card">
+      <div class="facility-img">写真</div>
+      <div class="facility-body">
+        <p class="facility-name">大ホール</p>
+        <p class="facility-desc">収容人数：最大500席・ロールバック・2階固定席</p>
+      </div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-img">写真</div>
+      <div class="facility-body">
+        <p class="facility-name">小ホール</p>
+        <p class="facility-desc">収容人数：最大150席・可動式ステージ</p>
+      </div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-img">写真</div>
+      <div class="facility-body">
+        <p class="facility-name">練習室</p>
+        <p class="facility-desc">グランドピアノ完備・防音設備</p>
+      </div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-img">写真</div>
+      <div class="facility-body">
+        <p class="facility-name">会議室</p>
+        <p class="facility-desc">最大40名・プロジェクター完備</p>
+      </div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-img">写真</div>
+      <div class="facility-body">
+        <p class="facility-name">ギャラリー</p>
+        <p class="facility-desc">展示スペース・展示パネル貸出</p>
+      </div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-img">写真</div>
+      <div class="facility-body">
+        <p class="facility-name">工作室</p>
+        <p class="facility-desc">各種工作・陶芸体験に対応</p>
+      </div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-img">写真</div>
+      <div class="facility-body">
+        <p class="facility-name">調理室</p>
+        <p class="facility-desc">IHコンロ8台・調理器具完備</p>
+      </div>
+    </div>
+    <div class="facility-card">
+      <div class="facility-img">写真</div>
+      <div class="facility-body">
+        <p class="facility-name">和室</p>
+        <p class="facility-desc">畳敷き・茶道・文化活動に</p>
+      </div>
+    </div>
+  </div>
+  </div><!-- /facilities-green -->
+  <div class="facilities-cta">
+    <p class="facilities-cta-text">詳しい施設情報は、佐久市HPでご確認ください</p>
+    <a class="facilities-cta-btn" href="#" target="_blank" rel="noopener">詳しくみる &rsaquo;</a>
+  </div>
+</section>
+
+<!-- フッター -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <!-- 上段：1カラム -->
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img class="footer-plant" src="images/honoka-icon.png" alt="">
+        <p class="footer-sub">佐久市交流文化館浅科</p>
+        <p class="footer-name">穂の香ホール</p>
+      </div>
+      <p class="footer-slippers-note">＼入るときはスリッパをはきます！／</p>
+      <div class="footer-cat-wrap">
+        <div class="footer-cat-line"></div>
+        <img class="footer-cat-img" src="images/かわいいタビー猫とピンクのスリッパ.png" alt="">
+        <div class="footer-cat-line"></div>
+      </div>
+    </div>
+    <!-- 下段：2カラム -->
+    <div class="footer-bottom">
+      <div class="footer-info">
+        <span>〒385-0000 長野県佐久市○○1-2-3</span>
+        <span>0267-00-0000</span>
+        <span><a href="mailto:example@example.com">example@example.com</a></span>
+        <span>開館時間 9:00〜21:00</span>
+        <span>休館日：毎週月曜日・祝日の翌日</span>
+      </div>
+      <div class="footer-map">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3228.0!2d138.5!3d36.2!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDEyJzAwLjAiTiAxMzjCsDMwJzAwLjAiRQ!5e0!3m2!1sja!2sjp!4v0"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="穂の香ホール 地図">
+        </iframe>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; 穂の香ホール</p>
+  </div>
+</footer>
 
 <!-- モーダル -->
 <div class="modal-overlay" id="modalOverlay">
@@ -1166,7 +1012,7 @@ const CONFIG = {
   SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvnIwcKJEakt21FcLiSqXgz0mr44_w7t-kr_9HnfoYTUOzxFRn1emhZoOUFgqK5SQb9JIuWRGp2QpE/pub?gid=0&single=true&output=csv',
 
   // ホール名（ページタイトル・ヘッダーに使用）
-  HALL_NAME: 'testホール',
+  HALL_NAME: 'コスモホール',
 
   // カテゴリ名（スプシのI列: 0〜3 の数値と対応）
   CATEGORIES: ['音楽', '演劇・ダンス', '講座・WS', '展示・その他'],
@@ -1174,17 +1020,9 @@ const CONFIG = {
 // ============================================================
 
 // スプシの列インデックス（0始まり・1行目はヘッダー行）
-// A:イベント名, B:開始日, C:終了日, D:時間, E:会場, F:概要, G:チェックボックス(skip), H:画像ステータス(skip), I:申込URL, J:カテゴリ番号, K:DriveファイルID, L:公開フラグ
-const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, URL:8, CAT:9, IMG:10, PUBLISH:11 };
+// A:イベント名, B:開始日, C:終了日, D:時間, E:会場, F:概要, G:DriveファイルID, H:申込URL, I:カテゴリ番号
+const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, IMG:6, URL:7, CAT:8 };
 
-// ---- サンプルデータ（SHEET_CSV_URLが空の時に使用） ----
-const DEMO_EVENTS = [
-  { name:'春のオーケストラコンサート', start:'2025/03/08', end:'2025/03/08', time:'14:00〜16:00', place:'大ホール', desc:'地元オーケストラによる春の定期演奏会。バッハ、モーツァルトなどクラシックの名曲をお楽しみください。', imgId:'', url:'#', cat:0 },
-  { name:'市民バレエ発表会', start:'2025/03/15', end:'2025/03/16', time:'13:00〜17:00', place:'大ホール', desc:'市内バレエスクールの生徒による発表会。日頃の練習の成果をお見せします。', imgId:'', url:'#', cat:1 },
-  { name:'写真展「信州の四季」', start:'2025/03/10', end:'2025/03/20', time:'10:00〜17:00', place:'ギャラリー', desc:'地元カメラマン6名による写真展。信州の美しい四季の風景をお楽しみください。', imgId:'', url:'', cat:3 },
-  { name:'初心者向け陶芸教室', start:'2025/03/22', end:'2025/03/22', time:'10:00〜12:00', place:'工作室', desc:'粘土を使った手びねり体験。作品は後日お渡しします（焼成費別途）。定員8名。', imgId:'', url:'#', cat:2 },
-  { name:'落語と漫才ナイト', start:'2025/03/29', end:'2025/03/29', time:'18:30〜20:30', place:'小ホール', desc:'地域の笑いの夜！プロの落語家と若手漫才師によるジョイントライブ。', imgId:'', url:'#', cat:3 },
-];
 
 // ---- グローバル変数 ----
 let events = [];
@@ -1194,22 +1032,14 @@ const now = new Date();
 currentYear  = now.getFullYear();
 currentMonth = now.getMonth();
 
-// ---- プレビューモード判定 ----
-const IS_PREVIEW = new URLSearchParams(window.location.search).get('preview') === 'true';
-
 // ---- 初期化 ----
-document.getElementById('hallName').textContent = `🎭 ${CONFIG.HALL_NAME} イベントカレンダー`;
 document.title = `イベントカレンダー｜${CONFIG.HALL_NAME}`;
 
 if (CONFIG.SHEET_CSV_URL) {
   document.getElementById('demoBanner').classList.add('hidden');
-  if (IS_PREVIEW) {
-    document.getElementById('previewBanner').style.display = 'block';
-  }
   loadFromSheet();
 } else {
-  events = DEMO_EVENTS;
-  renderCalendar();
+  renderToday();
 }
 
 // ---- Google Sheets CSV 取得 ----
@@ -1219,13 +1049,9 @@ async function loadFromSheet() {
     if (!res.ok) throw new Error('fetch error');
     const text = await res.text();
     events = parseCSV(text);
-    renderCalendar();
+    renderToday();
   } catch(e) {
-    document.getElementById('calendar').innerHTML = `
-      <div class="loading-state">
-        <p>⚠️ データの読み込みに失敗しました。</p>
-        <p style="font-size:0.8rem;margin-top:0.5rem">スプレッドシートのURL・公開設定を確認してください。</p>
-      </div>`;
+    renderToday();
   }
 }
 
@@ -1236,8 +1062,6 @@ function parseCSV(text) {
   for (let i = 1; i < lines.length; i++) {
     const cols = parseCSVLine(lines[i]);
     if (!cols[COL.NAME]) continue;
-    const publish = cols[COL.PUBLISH];
-    if (!IS_PREVIEW && publish !== 'TRUE') continue; // 通常モードは公開チェックのみ
     result.push({
       name:  cols[COL.NAME]  || '',
       start: cols[COL.START] || '',
@@ -1248,7 +1072,6 @@ function parseCSV(text) {
       imgId: cols[COL.IMG]   || '',
       url:   cols[COL.URL]   || '',
       cat:   Math.min(3, Math.max(0, parseInt(cols[COL.CAT] || '0') || 0)),
-      published: cols[COL.PUBLISH] === 'TRUE',
     });
   }
   return result;
@@ -1280,201 +1103,43 @@ function getEventsForDay(y, m, d) {
   });
 }
 
-// ---- 年セレクト初期化 ----
-function initYearSelect() {
-  const sel = document.getElementById('yearSelect');
-  sel.innerHTML = '';
-  for (let y = now.getFullYear() - 1; y <= now.getFullYear() + 3; y++) {
-    const opt = document.createElement('option');
-    opt.value = y;
-    opt.textContent = y;
-    sel.appendChild(opt);
-  }
-}
-initYearSelect();
+// ---- 今日のイベント描画 ----
+const DAYS_JA = ['日','月','火','水','木','金','土'];
 
-// ---- カレンダー描画 ----
-function renderCalendar() {
-  // セレクトボックスを同期
-  document.getElementById('yearSelect').value  = currentYear;
-  document.getElementById('monthSelect').value = currentMonth;
+function renderToday() {
+  const todayEvs = getEventsForDay(now.getFullYear(), now.getMonth(), now.getDate());
+  const list = document.getElementById('todayList');
+  const noEvs = document.getElementById('todayNoEvents');
 
-  const cal = document.getElementById('calendar');
-
-  const firstDow = new Date(currentYear, currentMonth, 1).getDay();
-  const lastDate  = new Date(currentYear, currentMonth + 1, 0).getDate();
-  const prevLast  = new Date(currentYear, currentMonth, 0).getDate();
-
-  const DAYS = ['日','月','火','水','木','金','土'];
-  let html = '<div class="day-headers">';
-  DAYS.forEach(d => { html += `<div class="day-header">${d}</div>`; });
-  html += '</div><div class="days-grid">';
-
-  let dayN = 1, nextN = 1;
-  const totalCells = 42;
-
-  for (let i = 0; i < totalCells; i++) {
-    const dow = i % 7;
-    let day, isCur = true;
-
-    if (i < firstDow)         { day = prevLast - firstDow + i + 1; isCur = false; }
-    else if (dayN > lastDate)  { day = nextN++; isCur = false; }
-    else                       { day = dayN++; }
-
-    const isToday = isCur && day === now.getDate()
-      && currentYear === now.getFullYear() && currentMonth === now.getMonth();
-
-    const dowClass = dow === 0 ? 'sunday' : dow === 6 ? 'saturday' : '';
-    const cls = [dowClass, isToday ? 'today' : '', !isCur ? 'other-month' : ''].filter(Boolean).join(' ');
-    const dayEvs2 = isCur ? getEventsForDay(currentYear, currentMonth, dayN > lastDate ? nextN - 1 : (i < firstDow ? prevLast - firstDow + i + 1 : dayN - 1)) : [];
-    const hasEv = isCur && dayEvs2.length > 0 ? ' has-events' : '';
-
-    html += `<div class="day-cell ${cls}${hasEv}">`;
-    html += `<span class="day-num">${day}</span>`;
-
-    if (isCur) {
-      const dayEvs = getEventsForDay(currentYear, currentMonth, day);
-      const show = dayEvs.slice(0, 3);
-      const rest = dayEvs.length - show.length;
-      // PC: チップ表示
-      show.forEach(ev => {
-        const idx = events.indexOf(ev);
-        html += `<span class="event-chip cat-${ev.cat}${ev.published ? '' : ' unpublished'}" data-idx="${idx}" tabindex="0" role="button">${ev.published ? '' : '🔒 '}${ev.name}</span>`;
-      });
-      if (rest > 0) html += `<div class="more-badge">+${rest}件</div>`;
-      // スマホ: ドット表示
-      if (dayEvs.length > 0) {
-        html += `<div class="dot-row" data-day="${day}">`;
-        dayEvs.slice(0, 5).forEach(ev => {
-          html += `<span class="event-dot cat-${ev.cat}" style="background:var(--cat${ev.cat})"></span>`;
-        });
-        html += `</div>`;
-      }
-    }
-
-    html += '</div>';
-
-    if (!isCur && dayN > lastDate && i >= 34) break;
-  }
-
-  html += '</div>';
-  cal.innerHTML = html;
-
-  cal.querySelectorAll('.event-chip').forEach(chip => {
-    chip.addEventListener('click', () => openModal(parseInt(chip.dataset.idx)));
-    chip.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(parseInt(chip.dataset.idx)); });
-  });
-
-  // スマホ：日付セルタップでその日のイベント一覧
-  cal.querySelectorAll('.day-cell.has-events, .dot-row').forEach(el => {
-    el.addEventListener('click', e => {
-      if (e.target.classList.contains('event-chip')) return;
-      const cell = el.closest('.day-cell') || el.parentElement;
-      const dayNum = cell.querySelector('.day-num');
-      if (!dayNum) return;
-      const d = parseInt(dayNum.textContent);
-      if (isNaN(d)) return;
-      openDayModal(currentYear, currentMonth, d);
-    });
-  });
-
-  // イベント一覧を描画
-  renderEventList();
-}
-
-// ---- イベント一覧描画 ----
-function renderEventList() {
-  const wrap = document.getElementById('eventListWrap');
-  const DOWS = ['日','月','火','水','木','金','土'];
-
-  // 当月のイベントを日付順に取得
-  const monthEvs = events.filter(ev => {
-    const s = toDate(ev.start);
-    const e = toDate(ev.end) || s;
-    const mStart = new Date(currentYear, currentMonth, 1);
-    const mEnd   = new Date(currentYear, currentMonth + 1, 0);
-    return s && e >= mStart && s <= mEnd;
-  }).sort((a, b) => toDate(a.start) - toDate(b.start));
-
-  if (monthEvs.length === 0) {
-    wrap.innerHTML = `
-      <div class="event-list-title">${currentMonth + 1}月のイベント</div>
-      <div class="event-list-empty">この月のイベントはありません</div>`;
+  if (todayEvs.length === 0) {
+    noEvs.style.display = '';
     return;
   }
 
-  const CAT_COLORS_LIST = ['var(--cat0)','var(--cat1)','var(--cat2)','var(--cat3)'];
 
-  let html = `<div class="event-list-title">${currentMonth + 1}月のイベント（${monthEvs.length}件）</div><div class="event-list">`;
-
-  monthEvs.forEach(ev => {
-    const idx   = events.indexOf(ev);
-    const sDate = toDate(ev.start);
-    const month = sDate.getMonth() + 1;
-    const day   = sDate.getDate();
-    const dow   = DOWS[sDate.getDay()];
-    const dateLabel = ev.end && ev.end !== ev.start
-      ? `${month}/${day}〜${toDate(ev.end).getDate()}日`
-      : `${month}/${day}（${dow}）`;
-    const borderColor = CAT_COLORS_LIST[ev.cat] || 'var(--primary)';
-    const unpublished = ev.published === false ? ' unpublished' : '';
-    const lockIcon    = ev.published === false ? '🔒 ' : '';
-
-    html += `
-      <div class="event-list-item${unpublished}" style="border-left-color:${borderColor}" data-idx="${idx}">
-        <div class="event-list-date" style="background:${borderColor}">
-          <div class="date-month">${month}月</div>
-          <div class="date-day">${day}</div>
-          <div class="date-dow">${dow}</div>
-        </div>
-        <div class="event-list-body">
-          <div class="event-list-name">${lockIcon}${ev.name}</div>
-          <div class="event-list-meta">
-            ${ev.time  ? `<span>🕐 ${ev.time}</span>` : ''}
-            ${ev.place ? `<span>📍 ${ev.place}</span>` : ''}
-          </div>
-        </div>
-      </div>`;
-  });
-
-  html += '</div>';
-  wrap.innerHTML = html;
-
-  wrap.querySelectorAll('.event-list-item').forEach(item => {
-    item.addEventListener('click', () => openModal(parseInt(item.dataset.idx)));
-  });
-}
-
-// ---- スマホ用：その日のイベント一覧モーダル ----
-function openDayModal(y, m, d) {
-  const dayEvs = getEventsForDay(y, m, d);
-  if (dayEvs.length === 0) return;
-  if (dayEvs.length === 1) { openModal(events.indexOf(dayEvs[0])); return; }
-
-  const content = document.getElementById('modalContent');
-  content.innerHTML = `
-    <div style="padding:1.2rem 1.4rem 0.5rem">
-      <h2 class="modal-title" style="margin:0 0 1rem">${m+1}月${d}日のイベント</h2>
-      <div style="display:flex;flex-direction:column;gap:0.6rem;padding-bottom:1.4rem">
-        ${dayEvs.map((ev, i) => {
-          const idx = events.indexOf(ev);
-          return `<button onclick="openModal(${idx})" style="
-            display:flex;align-items:center;gap:0.8rem;
-            background:#f7f6f2;border:none;border-radius:10px;
-            padding:0.8rem 1rem;cursor:pointer;text-align:left;width:100%;
-            font-family:inherit;font-size:0.9rem;color:var(--text);
-            transition:background 0.15s;
-          " onmouseover="this.style.background='#eeecea'" onmouseout="this.style.background='#f7f6f2'">
-            <span style="width:10px;height:10px;border-radius:50%;background:var(--cat${ev.cat});flex-shrink:0"></span>
-            <span style="flex:1;font-weight:500">${ev.name}</span>
-            <span style="font-size:0.75rem;color:var(--muted)">${ev.time || ''}</span>
-          </button>`;
-        }).join('')}
+  todayEvs.forEach(ev => {
+    const idx = events.indexOf(ev);
+    const card = document.createElement('div');
+    card.className = 'today-card';
+    card.innerHTML = `
+      <div class="today-date">
+        <span class="today-date-month">${now.getMonth() + 1}月</span>
+        <span class="today-date-day">${now.getDate()}</span>
+        <span class="today-date-dow">${DAYS_JA[now.getDay()]}</span>
       </div>
-    </div>
-  `;
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('modal').scrollTop = 0;
+      <div class="today-event-info">
+        <span class="today-badge cat-${ev.cat}">${CONFIG.CATEGORIES[ev.cat]}</span>
+        <p class="today-event-name">${ev.name}</p>
+        <div class="today-event-meta">
+          ${ev.time  ? `<span>🕐 ${ev.time}</span>` : ''}
+          ${ev.place ? `<span>📍 ${ev.place}</span>` : ''}
+        </div>
+      </div>
+      <button class="today-arrow">&#8250;</button>
+    `;
+    card.addEventListener('click', () => openModal(idx));
+    list.appendChild(card);
+  });
 }
 
 // ---- モーダル ----
@@ -1485,7 +1150,7 @@ function openModal(idx) {
   const content = document.getElementById('modalContent');
 
   const imgUrl = ev.imgId
-    ? `https://drive.google.com/thumbnail?id=${ev.imgId}&sz=w800`
+    ? `https://drive.google.com/uc?export=view&id=${ev.imgId}`
     : null;
 
   const dateStr = (ev.end && ev.end !== ev.start)
@@ -1496,12 +1161,12 @@ function openModal(idx) {
   const catColor = CAT_COLORS[ev.cat] || CAT_COLORS[0];
 
   content.innerHTML = `
-    <div class="modal-flyer-wrap" id="flyerWrap">
+    <div class="modal-flyer-wrap">
       ${imgUrl
-        ? `<img class="modal-flyer" id="flyerImg" src="${imgUrl}" alt="${ev.name}のチラシ">`
+        ? `<img class="modal-flyer" src="${imgUrl}" alt="${ev.name}のチラシ"
+              onerror="this.parentElement.innerHTML='<div class=\\"modal-flyer-placeholder\\"><span>🎪</span><p>チラシ画像を準備中</p></div>'">`
         : `<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシなし</p></div>`}
-    </div>`;
-  content.innerHTML += `
+    </div>
     <div class="modal-cat-badge" style="background:${catColor}">${catName}</div>
     <h2 class="modal-title">${ev.name}</h2>
     <div class="modal-info-list">
@@ -1515,17 +1180,6 @@ function openModal(idx) {
         <a class="btn-primary" href="${ev.url}" target="_blank" rel="noopener">🎟 申込・詳細はこちら</a>
       </div>` : '<div style="height:1.4rem"></div>'}
   `;
-
-  // 画像読み込みエラー時の処理
-  if (imgUrl) {
-    const flyerImg = document.getElementById('flyerImg');
-    if (flyerImg) {
-      flyerImg.addEventListener('error', () => {
-        document.getElementById('flyerWrap').innerHTML =
-          '<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシなし</p></div>';
-      });
-    }
-  }
 
   document.getElementById('modalOverlay').classList.add('open');
   document.getElementById('modal').scrollTop = 0;
@@ -1541,92 +1195,21 @@ document.getElementById('modalOverlay').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ---- ヒーロー ----
-document.getElementById('heroBg').classList.add('loaded');
-document.getElementById('heroScroll').addEventListener('click', () => {
-  document.querySelector('header').scrollIntoView({ behavior: 'smooth' });
-});
-
-document.getElementById('prevBtn').addEventListener('click', () => {
-  currentMonth--;
-  if (currentMonth < 0) { currentMonth = 11; currentYear--; initYearSelect(); }
-  renderCalendar();
-});
-document.getElementById('nextBtn').addEventListener('click', () => {
-  currentMonth++;
-  if (currentMonth > 11) { currentMonth = 0; currentYear++; initYearSelect(); }
-  renderCalendar();
-});
-document.getElementById('yearSelect').addEventListener('change', e => {
-  currentYear = parseInt(e.target.value);
-  renderCalendar();
-});
-document.getElementById('monthSelect').addEventListener('change', e => {
-  currentMonth = parseInt(e.target.value);
-  renderCalendar();
-});
-</script>
-
-<!-- フッター -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-info">
-      <h2>🎭 testホール</h2>
-      <div class="footer-info-list">
-        <div class="footer-info-row">
-          <span class="footer-info-icon">📍</span>
-          <span>〒385-0000 長野県佐久市○○1-2-3</span>
-        </div>
-        <div class="footer-info-row">
-          <span class="footer-info-icon">📞</span>
-          <span>0267-00-0000</span>
-        </div>
-        <div class="footer-info-row">
-          <span class="footer-info-icon">✉️</span>
-          <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8fe6e1e9e0cfece0fce2e0a2e7eee3e3a1eaf7eee2ffe3eaa1e5ff">[email&#160;protected]</a></span>
-        </div>
-        <div class="footer-info-row">
-          <span class="footer-info-icon">🕐</span>
-          <span>開館時間 9:00〜21:00<br>休館日：毎週月曜日・祝日の翌日</span>
-        </div>
-      </div>
-      <div class="footer-access">
-        ♿ 車椅子・ベビーカーでのご来場も歓迎です
-      </div>
-    </div>
-    <div class="footer-map" id="footerMap"></div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2026 testホール All Rights Reserved.</span>
-  </div>
-</footer>
-
-
-<script>
-window.addEventListener('load', function() {
-  var MAP_LAT = 36.2488;
-  var MAP_LNG = 138.4770;
-
-  var map = L.map('footerMap', { zoomControl: true, scrollWheelZoom: false })
-    .setView([MAP_LAT, MAP_LNG], 15);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
-
-  var markerIcon = L.divIcon({
-    html: '<div style="background:#c8954a;width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>',
-    iconSize: [20, 20],
-    iconAnchor: [10, 20],
-    className: ''
+// ---- マーキー 一時停止 ----
+const heroDeco = document.querySelector('.hero-deco');
+if (heroDeco) {
+  heroDeco.addEventListener('click', () => {
+    const paused = heroDeco.style.animationPlayState === 'paused';
+    heroDeco.style.animationPlayState = paused ? 'running' : 'paused';
   });
-  L.marker([MAP_LAT, MAP_LNG], { icon: markerIcon })
-    .addTo(map)
-    .bindPopup('<b>testホール</b><br>●●県●●市●●町')
-    .openPopup();
+}
 
-  setTimeout(function() { map.invalidateSize(); }, 300);
-});
+// ---- ヘッダー glassmorphism ----
+const headerEl = document.querySelector('header');
+window.addEventListener('scroll', () => {
+  headerEl.classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
 </script>
 </body>
 </html>
