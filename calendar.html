@@ -775,6 +775,7 @@ function openModal(idx) {
   const ev = events[idx];
   const fileId = ev.imgId.trim();
   const imgUrl = fileId ? `https://drive.usercontent.google.com/download?id=${fileId}&export=view&authuser=0` : null;
+  console.log('imgId:', JSON.stringify(ev.imgId), '/ fileId:', JSON.stringify(fileId), '/ imgUrl:', imgUrl);
   const dateStr = (ev.end && ev.end !== ev.start) ? `${ev.start}　〜　${ev.end}` : ev.start;
   const catName  = CONFIG.CATEGORIES[ev.cat] || '';
   const catColor = CAT_COLORS[ev.cat] || CAT_COLORS[0];
