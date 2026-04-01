@@ -1021,7 +1021,7 @@ const CONFIG = {
 
 // スプシの列インデックス（0始まり・1行目はヘッダー行）
 // A:イベント名, B:開始日, C:終了日, D:時間, E:会場, F:概要, G:DriveファイルID, H:申込URL, I:カテゴリ番号
-const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, IMG:6, URL:7, CAT:8, PUB:11 };
+const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, URL:8, CAT:9, IMG:10, PUB:11 };
 
 
 // ---- グローバル変数 ----
@@ -1154,8 +1154,9 @@ function openModal(idx) {
   const ev = events[idx];
   const content = document.getElementById('modalContent');
 
-  const imgUrl = ev.imgId
-    ? `https://lh3.googleusercontent.com/d/${ev.imgId}`
+  const fileId = ev.imgId.trim();
+  const imgUrl = fileId
+    ? `https://drive.usercontent.google.com/download?id=${fileId}&export=view&authuser=0`
     : null;
 
   const dateStr = (ev.end && ev.end !== ev.start)
