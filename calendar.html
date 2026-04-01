@@ -340,7 +340,7 @@
     }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
     .modal {
-      background: #fff;
+      background: linear-gradient(to bottom, #FEFFEA, #FCFFD9);
       border-radius: var(--radius);
       max-width: 520px;
       width: 100%;
@@ -603,7 +603,7 @@ const CONFIG = {
   HALL_NAME: '穂の香ホール',
   CATEGORIES: ['音楽', '演劇・ダンス', '講座・WS', '展示・その他'],
 };
-const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, IMG:6, URL:7, CAT:8 };
+const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, IMG:6, URL:7, CAT:8, PUB:11 };
 const CAT_COLORS = ['var(--cat0)','var(--cat1)','var(--cat2)','var(--cat3)'];
 const DAYS_JA = ['日','月','火','水','木','金','土'];
 
@@ -678,6 +678,7 @@ function parseCSV(text) {
   for (let i = 1; i < lines.length; i++) {
     const cols = parseCSVLine(lines[i]);
     if (!cols[COL.NAME]) continue;
+    if ((cols[COL.PUB] || '').toUpperCase() !== 'TRUE') continue;
     result.push({
       name:  cols[COL.NAME]  || '',
       start: cols[COL.START] || '',
