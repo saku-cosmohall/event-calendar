@@ -766,6 +766,10 @@ function renderList() {
 }
 
 // ---- モーダル ----
+function handleFlyerError(el) {
+  el.parentElement.innerHTML = '<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシ画像を準備中</p></div>';
+}
+
 function openModal(idx) {
   const ev = events[idx];
   const imgUrl = ev.imgId ? `https://drive.google.com/uc?export=view&id=${ev.imgId}` : null;
@@ -776,8 +780,7 @@ function openModal(idx) {
   document.getElementById('modalContent').innerHTML = `
     <div class="modal-flyer-wrap">
       ${imgUrl
-        ? `<img class="modal-flyer" src="${imgUrl}" alt="${ev.name}のチラシ"
-              onerror="this.parentElement.innerHTML='<div class=\\"modal-flyer-placeholder\\"><span>🎪</span><p>チラシ画像を準備中</p></div>'">`
+        ? `<img class="modal-flyer" src="${imgUrl}" alt="${ev.name}のチラシ" onerror="handleFlyerError(this)">`
         : `<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシなし</p></div>`}
     </div>
     <div class="modal-cat-badge" style="background:${catColor}">${catName}</div>
