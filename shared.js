@@ -50,7 +50,7 @@ function initFooter() {
         <p class="footer-slippers-note">＼入るときはスリッパをはきます！／</p>
         <div class="footer-cat-wrap">
           <div class="footer-cat-line"></div>
-          <img class="footer-cat-img" src="images/かわいいタビー猫とピンクのスリッパ.png" alt="">
+          <img class="footer-cat-img" src="images/footer-cat.png" alt="">
           <div class="footer-cat-line"></div>
         </div>
       </div>
