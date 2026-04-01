@@ -340,7 +340,7 @@
     }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
     .modal {
-      background: linear-gradient(to bottom, #FEFFEA, #FCFFD9);
+      background: linear-gradient(to bottom, #FCFFD9, #FEFFEA);
       border-radius: var(--radius);
       max-width: 520px;
       width: 100%;
@@ -773,7 +773,7 @@ function handleFlyerError(el) {
 
 function openModal(idx) {
   const ev = events[idx];
-  const imgUrl = ev.imgId ? `https://drive.google.com/uc?export=view&id=${ev.imgId}` : null;
+  const imgUrl = ev.imgId ? `https://drive.google.com/thumbnail?id=${ev.imgId}&sz=w800` : null;
   const dateStr = (ev.end && ev.end !== ev.start) ? `${ev.start}　〜　${ev.end}` : ev.start;
   const catName  = CONFIG.CATEGORIES[ev.cat] || '';
   const catColor = CAT_COLORS[ev.cat] || CAT_COLORS[0];
