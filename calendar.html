@@ -7,118 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Madimi+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
   <style>
-    :root {
-      --bg: #FFF4D6;
-      --bg-alt: #F6E27A;
-      --bg-header: #FEFFEA;
-      --bg-accent: #CDD866;
-      --surface: #ffffff;
-      --primary: #5E4B37;
-      --text: #5E4B37;
-      --muted: #aaa;
-      --border: #e8e0c8;
-      --sun: #e05555;
-      --sat: #5588cc;
-      --shadow-sm: 0 2px 10px rgba(0,0,0,0.06);
-      --shadow-md: 0 8px 32px rgba(0,0,0,0.10);
-      --shadow-lg: 0 20px 60px rgba(0,0,0,0.18);
-      --radius: 16px;
-      --cat0: #e8836e;
-      --cat1: #82b84a;
-      --cat2: #6aabe0;
-      --cat3: #c98ad0;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'M PLUS Rounded 1c', sans-serif;
-      background: #FEFFEA;
-      color: var(--text);
-      min-height: 100vh;
-      padding-top: 64px;
-    }
-    .page-main {
-      background: linear-gradient(to bottom, #FEFFEA, #FCFFD7);
-    }
-
-    /* ===== HEADER ===== */
-    header {
-      background: transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      padding: 0.75rem 1.2rem;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      border-bottom: 1px solid transparent;
-      transition: background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
-    }
-    header.scrolled {
-      background: rgba(255, 254, 234, 0.55);
-      backdrop-filter: blur(14px) saturate(160%);
-      -webkit-backdrop-filter: blur(14px) saturate(160%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 2px 20px rgba(94, 75, 55, 0.1);
-    }
-    .header-inner {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 960px;
-      margin: 0 auto;
-      gap: 1rem;
-    }
-    .header-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      text-decoration: none;
-    }
-    .header-cat-icon {
-      width: 40px;
-      height: 40px;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-    .header-texts {
-      display: flex;
-      flex-direction: column;
-    }
-    .header-sub {
-      font-size: 0.68rem;
-      color: #999;
-      letter-spacing: 0.04em;
-      line-height: 1.2;
-    }
-    .header-name {
-      font-family: 'M PLUS Rounded 1c', sans-serif;
-      font-size: clamp(1rem, 3vw, 1.25rem);
-      color: #5E4B37;
-      letter-spacing: 0.08em;
-      line-height: 1.3;
-    }
-    .header-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      background: linear-gradient(to right, #D3689E, #F7C8D6);
-      color: #fff;
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 0.5rem 1.1rem;
-      border-radius: 999px;
-      text-decoration: none;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-      transition: background 0.2s, transform 0.15s;
-      flex-shrink: 0;
-    }
-    .header-btn:hover { filter: brightness(0.92); transform: translateY(-1px); }
+    body { background: #FEFFEA; }
+    .page-main { background: linear-gradient(to bottom, #FEFFEA, #FCFFD7); }
 
     /* ===== PAGE TITLE ===== */
     .page-title-section {
@@ -269,9 +161,6 @@
       border-radius: 999px;
       color: #fff;
       align-self: flex-start;
-    }
-    .event-badge,
-    .modal-cat-badge {
       background: linear-gradient(to bottom, #B3C399, #CDD866) !important;
     }
     .event-name {
@@ -322,200 +211,11 @@
     .top-btn.visible { opacity: 1; pointer-events: all; }
     .top-btn:hover { transform: translateY(-2px); }
     .top-btn-arrow { font-size: 0.85rem; line-height: 1; }
-
-    /* ===== MODAL ===== */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(94, 75, 55, 0.4);
-      backdrop-filter: blur(3px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 200;
-      padding: 1rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: linear-gradient(to bottom, #FCFFD9, #FEFFEA);
-      border-radius: var(--radius);
-      max-width: 520px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(24px) scale(0.98);
-      transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1);
-      scrollbar-width: thin;
-    }
-    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
-    .modal-header {
-      position: sticky;
-      top: 0;
-      display: flex;
-      justify-content: flex-end;
-      padding: 0.75rem 0.75rem 0;
-      z-index: 10;
-    }
-    .modal-close {
-      background: rgba(255,255,255,0.95);
-      border: none;
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 1rem;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-      transition: background 0.15s;
-    }
-    .modal-close:hover { background: #f0f0f0; }
-    .modal-flyer-wrap {
-      margin: 0 1.2rem;
-      border-radius: 10px;
-      overflow: hidden;
-      background: #f0efe9;
-      max-height: 320px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-flyer {
-      width: 100%;
-      max-height: 320px;
-      object-fit: contain;
-      display: block;
-    }
-    .modal-flyer-placeholder {
-      height: 180px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-    .modal-flyer-placeholder span { font-size: 2.5rem; }
-    .modal-cat-badge {
-      display: inline-block;
-      font-size: 0.72rem;
-      padding: 3px 10px;
-      border-radius: 20px;
-      color: #fff;
-      margin: 1.2rem 1.4rem 0.5rem;
-    }
-    .modal-title {
-      font-family: 'M PLUS Rounded 1c', sans-serif;
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--primary);
-      line-height: 1.5;
-      padding: 0 1.4rem;
-      margin-bottom: 1rem;
-    }
-    .modal-info-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      padding: 0 1.4rem;
-    }
-    .modal-info-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.8rem;
-      font-size: 0.88rem;
-    }
-    .modal-label { color: var(--muted); font-size: 0.78rem; min-width: 54px; padding-top: 1px; }
-    .modal-value { line-height: 1.6; }
-    .modal-divider { height: 1px; background: var(--border); margin: 1rem 1.4rem; }
-    .modal-desc { padding: 0 1.4rem; font-size: 0.88rem; line-height: 1.9; color: #444; white-space: pre-wrap; }
-    .modal-actions { padding: 1.4rem; display: flex; gap: 0.8rem; flex-wrap: wrap; }
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.72rem 1.6rem;
-      background: linear-gradient(to right, #D3689E, #F7C8D6);
-      color: #fff;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      transition: filter 0.2s, transform 0.15s;
-    }
-    .btn-primary:hover { filter: brightness(0.92); transform: translateY(-1px); }
-
-    /* ===== FOOTER ===== */
-    .site-footer {
-      background: var(--bg);
-      padding: 3rem 1.5rem 2rem;
-      margin-top: 0;
-      border-top: 1px solid rgba(205, 216, 102, 0.4);
-    }
-    .footer-inner { max-width: 900px; margin: 0 auto; }
-    .footer-brand { text-align: center; margin-bottom: 1.6rem; }
-    .footer-plant { width: 48px; height: auto; opacity: 0.85; margin-bottom: 0.5rem; }
-    .footer-sub { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 0.3rem; }
-    .footer-name {
-      font-family: 'M PLUS Rounded 1c', sans-serif;
-      font-size: clamp(1.8rem, 6vw, 2.6rem);
-      font-weight: 700;
-      color: #5E4B37;
-      letter-spacing: 0.15em;
-      line-height: 1.2;
-      margin-bottom: 0.5rem;
-    }
-    .footer-top { display: flex; flex-direction: column; align-items: center; margin-bottom: 1.6rem; }
-    .footer-brand { text-align: center; margin-bottom: 0.6rem; display: flex; flex-direction: column; align-items: center; }
-    .footer-bottom { display: flex; flex-direction: column; gap: 1.2rem; width: 100%; }
-    .footer-slippers-note { font-size: 0.78rem; color: var(--muted); }
-    .footer-cat-wrap { display: flex; align-items: center; gap: 1rem; width: 100%; }
-    .footer-cat-line { flex: 1; height: 1px; background: #BA9E81; }
-    .footer-cat-img { width: clamp(80px, 22vw, 130px); object-fit: contain; flex-shrink: 0; }
-    .footer-info {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.83rem;
-      color: #5E4B37;
-      line-height: 1.7;
-      text-align: center;
-    }
-    .footer-info a { color: #5E4B37; text-decoration: underline; text-underline-offset: 3px; }
-    .footer-address { font-size: 0.83rem; color: #5E4B37; }
-    .footer-map { width: 100%; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); }
-    .footer-map iframe { display: block; width: 100%; height: 220px; border: none; }
-    .footer-copy { text-align: center; margin-top: 2rem; font-size: 0.7rem; color: var(--muted); }
-
-    @media (min-width: 768px) {
-      .footer-brand { text-align: left; }
-      .footer-body { flex-direction: row; align-items: flex-start; gap: 2.5rem; }
-      .footer-bottom { flex-direction: row; align-items: flex-start; gap: 2rem; }
-      .footer-info { flex: 0 0 50%; align-items: flex-start; text-align: left; }
-      .footer-map { flex: 0 0 50%; }
-      .footer-map iframe { height: 280px; }
-    }
   </style>
 </head>
 <body>
 
-<header id="siteHeader">
-  <div class="header-inner">
-    <a class="header-brand" href="index.html">
-      <img class="header-cat-icon" src="images/header-cat.png" alt="">
-      <div class="header-texts">
-        <span class="header-sub">佐久市交流文化館浅科</span>
-        <span class="header-name">穂の香ホール</span>
-      </div>
-    </a>
-    <a class="header-btn" href="calendar.html">イベントカレンダー &rsaquo;</a>
-  </div>
-</header>
+<header id="siteHeader"></header>
 
 <div class="page-main">
 <div class="page-title-section">
@@ -549,73 +249,15 @@
   <span>TOP</span>
 </button>
 
-<!-- モーダル -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal" id="modal" role="dialog" aria-modal="true">
-    <div class="modal-header">
-      <button class="modal-close" id="modalClose" aria-label="閉じる">✕</button>
-    </div>
-    <div id="modalContent"></div>
-  </div>
-</div>
-
 <!-- フッター -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <!-- 上段：1カラム -->
-    <div class="footer-top">
-      <div class="footer-brand">
-        <img class="footer-plant" src="images/honoka-icon.png" alt="">
-        <p class="footer-sub">佐久市交流文化館浅科</p>
-        <p class="footer-name">穂の香ホール</p>
-      </div>
-      <p class="footer-slippers-note">＼入るときはスリッパをはきます！／</p>
-      <div class="footer-cat-wrap">
-        <div class="footer-cat-line"></div>
-        <img class="footer-cat-img" src="images/かわいいタビー猫とピンクのスリッパ.png" alt="">
-        <div class="footer-cat-line"></div>
-      </div>
-    </div>
-    <!-- 下段：2カラム -->
-    <div class="footer-bottom">
-      <div class="footer-info">
-        <span>〒385-0000 長野県佐久市○○1-2-3</span>
-        <span>0267-00-0000</span>
-        <span><a href="mailto:example@example.com">example@example.com</a></span>
-        <span>開館時間 9:00〜21:00</span>
-        <span>休館日：毎週月曜日・祝日の翌日</span>
-      </div>
-      <div class="footer-map">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3228.0!2d138.5!3d36.2!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDEyJzAwLjAiTiAxMzjCsDMwJzAwLjAiRQ!5e0!3m2!1sja!2sjp!4v0"
-          allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-          title="穂の香ホール 地図">
-        </iframe>
-      </div>
-    </div>
-    <p class="footer-copy">&copy; 穂の香ホール</p>
-  </div>
-</footer>
+<footer class="site-footer" id="siteFooter"></footer>
 
+<script src="shared.js"></script>
 <script>
-const CONFIG = {
-  SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvnIwcKJEakt21FcLiSqXgz0mr44_w7t-kr_9HnfoYTUOzxFRn1emhZoOUFgqK5SQb9JIuWRGp2QpE/pub?gid=0&single=true&output=csv',
-  HALL_NAME: '穂の香ホール',
-  CATEGORIES: ['音楽', '演劇・ダンス', '講座・WS', '展示・その他'],
-};
-const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, URL:8, CAT:9, IMG:10, PUB:11 };
-const CAT_COLORS = ['var(--cat0)','var(--cat1)','var(--cat2)','var(--cat3)'];
-const DAYS_JA = ['日','月','火','水','木','金','土'];
+initHeader();
+initFooter();
+initModal();
 
-const DEMO_EVENTS = [
-  { name:'春のオーケストラコンサート', start:'2025/03/08', end:'2025/03/08', time:'14:00〜16:00', place:'大ホール', desc:'地元オーケストラによる春の定期演奏会。', imgId:'', url:'#', cat:0 },
-  { name:'市民バレエ発表会', start:'2025/03/15', end:'2025/03/16', time:'13:00〜17:00', place:'大ホール', desc:'市内バレエスクールの生徒による発表会。', imgId:'', url:'#', cat:1 },
-  { name:'写真展「信州の四季」', start:'2025/03/10', end:'2025/03/20', time:'10:00〜17:00', place:'ギャラリー', desc:'地元カメラマン6名による写真展。', imgId:'', url:'', cat:3 },
-  { name:'初心者向け陶芸教室', start:'2025/03/22', end:'2025/03/22', time:'10:00〜12:00', place:'工作室', desc:'粘土を使った手びねり体験。', imgId:'', url:'#', cat:2 },
-  { name:'落語と漫才ナイト', start:'2025/03/29', end:'2025/03/29', time:'18:30〜20:30', place:'小ホール', desc:'地域の笑いの夜！', imgId:'', url:'#', cat:3 },
-];
-
-let events = [];
 const now = new Date();
 let currentYear  = now.getFullYear();
 let currentMonth = now.getMonth();
@@ -653,71 +295,7 @@ monthSelect.addEventListener('change', () => {
 });
 
 // ---- データ取得 ----
-if (CONFIG.SHEET_CSV_URL) {
-  loadFromSheet();
-} else {
-  events = DEMO_EVENTS;
-  renderList();
-}
-
-async function loadFromSheet() {
-  try {
-    const res = await fetch(CONFIG.SHEET_CSV_URL);
-    if (!res.ok) throw new Error();
-    events = parseCSV(await res.text());
-    renderList();
-  } catch {
-    events = DEMO_EVENTS;
-    renderList();
-  }
-}
-
-function parseCSV(text) {
-  const result = [];
-  const lines = text.split(/\r?\n/);
-  for (let i = 1; i < lines.length; i++) {
-    const cols = parseCSVLine(lines[i]);
-    if (!cols[COL.NAME]) continue;
-    if ((cols[COL.PUB] || '').toUpperCase() !== 'TRUE') continue;
-    result.push({
-      name:  cols[COL.NAME]  || '',
-      start: cols[COL.START] || '',
-      end:   cols[COL.END]   || cols[COL.START] || '',
-      time:  cols[COL.TIME]  || '',
-      place: cols[COL.PLACE] || '',
-      desc:  cols[COL.DESC]  || '',
-      imgId: cols[COL.IMG]   || '',
-      url:   cols[COL.URL]   || '',
-      cat:   Math.min(3, Math.max(0, parseInt(cols[COL.CAT] || '0') || 0)),
-    });
-  }
-  return result;
-}
-
-function parseCSVLine(line) {
-  const cols = []; let cur = '', inQ = false;
-  for (let i = 0; i < line.length; i++) {
-    if (line[i] === '"') { inQ = !inQ; continue; }
-    if (line[i] === ',' && !inQ) { cols.push(cur.trim()); cur = ''; continue; }
-    cur += line[i];
-  }
-  cols.push(cur.trim());
-  return cols;
-}
-
-function toDate(str) {
-  if (!str) return null;
-  return new Date(str.replace(/\//g, '-') + 'T00:00:00');
-}
-
-function getEventsForDay(y, m, d) {
-  const target = new Date(y, m, d);
-  return events.filter(ev => {
-    const s = toDate(ev.start);
-    const e = toDate(ev.end) || s;
-    return s && target >= s && target <= e;
-  });
-}
+loadFromSheet(renderList);
 
 // ---- リスト描画 ----
 function renderList() {
@@ -766,51 +344,6 @@ function renderList() {
   }
 }
 
-// ---- モーダル ----
-function handleFlyerError(el) {
-  el.parentElement.innerHTML = '<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシ画像を準備中</p></div>';
-}
-
-function openModal(idx) {
-  const ev = events[idx];
-  const fileId = ev.imgId.trim();
-  const imgUrl = fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200` : null;
-  const dateStr = (ev.end && ev.end !== ev.start) ? `${ev.start}　〜　${ev.end}` : ev.start;
-  const catName  = CONFIG.CATEGORIES[ev.cat] || '';
-  const catColor = CAT_COLORS[ev.cat] || CAT_COLORS[0];
-
-  document.getElementById('modalContent').innerHTML = `
-    <div class="modal-flyer-wrap">
-      ${imgUrl
-        ? `<img class="modal-flyer" src="${imgUrl}" alt="${ev.name}のチラシ" onerror="handleFlyerError(this)">`
-        : `<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシなし</p></div>`}
-    </div>
-    <div class="modal-cat-badge" style="background:${catColor}">${catName}</div>
-    <h2 class="modal-title">${ev.name}</h2>
-    <div class="modal-info-list">
-      ${dateStr ? `<div class="modal-info-row"><span class="modal-label">📅 日程</span><span class="modal-value">${dateStr}</span></div>` : ''}
-      ${ev.time  ? `<div class="modal-info-row"><span class="modal-label">🕐 時間</span><span class="modal-value">${ev.time}</span></div>` : ''}
-      ${ev.place ? `<div class="modal-info-row"><span class="modal-label">📍 会場</span><span class="modal-value">${ev.place}</span></div>` : ''}
-    </div>
-    ${ev.desc ? `<div class="modal-divider"></div><p class="modal-desc">${ev.desc}</p>` : ''}
-    ${ev.url && ev.url !== '#' ? `
-      <div class="modal-actions">
-        <a class="btn-primary" href="${ev.url}" target="_blank" rel="noopener">主催者HPはこちら &rsaquo;</a>
-      </div>` : '<div style="height:1.4rem"></div>'}
-  `;
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('modal').scrollTop = 0;
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-}
-document.getElementById('modalClose').addEventListener('click', closeModal);
-document.getElementById('modalOverlay').addEventListener('click', e => {
-  if (e.target.id === 'modalOverlay') closeModal();
-});
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
 // ---- 月ナビ ----
 document.getElementById('prevBtn').addEventListener('click', () => {
   currentMonth--;
@@ -822,12 +355,6 @@ document.getElementById('nextBtn').addEventListener('click', () => {
   if (currentMonth > 11) { currentMonth = 0; currentYear++; }
   renderList();
 });
-
-// ---- ヘッダー glassmorphism ----
-const headerEl = document.getElementById('siteHeader');
-window.addEventListener('scroll', () => {
-  headerEl.classList.toggle('scrolled', window.scrollY > 10);
-}, { passive: true });
 
 // ---- TOPボタン ----
 const topBtn = document.getElementById('topBtn');
