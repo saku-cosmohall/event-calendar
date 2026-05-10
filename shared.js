@@ -2,7 +2,7 @@
 // ★ 設定欄 ★  ここだけ編集してください
 // ============================================================
 const CONFIG = {
-  SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9knv6we83SbfOHhgc0LpZp1_pmnIOP8_Jc2IAxESpZBJdprmMx-N2gZu5v9m9c5U_bWPSrOJJqvX0/pubhtml?gid=0&single=true',
+  SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9knv6we83SbfOHhgc0LpZp1_pmnIOP8_Jc2IAxESpZBJdprmMx-N2gZu5v9m9c5U_bWPSrOJJqvX0/pub?gid=0&single=true&output=csv',
   HALL_NAME: '穂の香ホール',
   CATEGORIES: ['音楽', '演劇・ダンス', '講座・WS', '展示・その他'],
 };
