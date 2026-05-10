@@ -2,7 +2,7 @@
 // ★ 設定欄 ★  ここだけ編集してください
 // ============================================================
 const CONFIG = {
-  SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQvnIwcKJEakt21FcLiSqXgz0mr44_w7t-kr_9HnfoYTUOzxFRn1emhZoOUFgqK5SQb9JIuWRGp2QpE/pub?gid=0&single=true&output=csv',
+  SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9knv6we83SbfOHhgc0LpZp1_pmnIOP8_Jc2IAxESpZBJdprmMx-N2gZu5v9m9c5U_bWPSrOJJqvX0/pubhtml?gid=0&single=true',
   HALL_NAME: '穂の香ホール',
   CATEGORIES: ['音楽', '演劇・ダンス', '講座・WS', '展示・その他'],
 };
@@ -49,18 +49,17 @@ function initFooter() {
         </div>
         <p class="footer-slippers-note">＼入るときはスリッパをはきます！／</p>
         <div class="footer-cat-wrap">
-          <div class="footer-cat-line"></div>
           <img class="footer-cat-img" src="images/footer-cat.png" alt="">
-          <div class="footer-cat-line"></div>
         </div>
       </div>
       <div class="footer-bottom">
         <div class="footer-info">
-          <span>〒385-0000 長野県佐久市○○1-2-3</span>
-          <span>0267-00-0000</span>
-          <span><a href="mailto:example@example.com">example@example.com</a></span>
-          <span>開館時間 9:00〜21:00</span>
-          <span>休館日：毎週月曜日・祝日の翌日</span>
+          <span>〒384-2106 長野県佐久市八幡229番地</span>
+          <span>0267-58-3304</span>
+          <span>開館時間 9:00〜17:00</span>
+          <span>使用時間 9:00〜22:00</span>
+          <span>休館日：月曜日（祝日の場合は除く）祝日の翌日（土曜・日曜日を除く）
+年末年始（12月29日～1月3日）</span>
         </div>
         <div class="footer-map">
           <iframe
