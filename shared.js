@@ -2,21 +2,33 @@
 // ★ 設定欄 ★  ここだけ編集してください
 // ============================================================
 const CONFIG = {
-  SHEET_CSV_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT9knv6we83SbfOHhgc0LpZp1_pmnIOP8_Jc2IAxESpZBJdprmMx-N2gZu5v9m9c5U_bWPSrOJJqvX0/pub?gid=0&single=true&output=csv',
-  HALL_NAME: '穂の香ホール',
-  CATEGORIES: ['音楽', '演劇・ダンス', '講座・WS', '展示・その他'],
+  SHEET_CSV_URL:
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT9knv6we83SbfOHhgc0LpZp1_pmnIOP8_Jc2IAxESpZBJdprmMx-N2gZu5v9m9c5U_bWPSrOJJqvX0/pub?gid=0&single=true&output=csv",
+  HALL_NAME: "穂の香ホール",
+  CATEGORIES: ["音楽", "演劇・ダンス", "講座・WS", "展示・その他"],
 };
 // ============================================================
 
-const COL = { NAME:0, START:1, END:2, TIME:3, PLACE:4, DESC:5, URL:8, CAT:9, IMG:10, PUB:11 };
-const CAT_COLORS = ['var(--cat0)','var(--cat1)','var(--cat2)','var(--cat3)'];
-const DAYS_JA = ['日','月','火','水','木','金','土'];
+const COL = {
+  NAME: 0,
+  START: 1,
+  END: 2,
+  TIME: 3,
+  PLACE: 4,
+  DESC: 5,
+  URL: 8,
+  CAT: 9,
+  IMG: 10,
+  PUB: 11,
+};
+const CAT_COLORS = ["var(--cat0)", "var(--cat1)", "var(--cat2)", "var(--cat3)"];
+const DAYS_JA = ["日", "月", "火", "水", "木", "金", "土"];
 
 let events = [];
 
 // ---- ヘッダー注入 ----
 function initHeader() {
-  const header = document.getElementById('siteHeader');
+  const header = document.getElementById("siteHeader");
   if (!header) return;
   header.innerHTML = `
     <div class="header-inner">
@@ -30,14 +42,18 @@ function initHeader() {
       <a class="header-btn" href="calendar.html">イベントカレンダー &rsaquo;</a>
     </div>
   `;
-  window.addEventListener('scroll', () => {
-    header.classList.toggle('scrolled', window.scrollY > 10);
-  }, { passive: true });
+  window.addEventListener(
+    "scroll",
+    () => {
+      header.classList.toggle("scrolled", window.scrollY > 10);
+    },
+    { passive: true },
+  );
 }
 
 // ---- フッター注入 ----
 function initFooter() {
-  const footer = document.getElementById('siteFooter');
+  const footer = document.getElementById("siteFooter");
   if (!footer) return;
   footer.innerHTML = `
     <div class="footer-inner">
@@ -76,9 +92,9 @@ function initFooter() {
 
 // ---- モーダル注入 ----
 function initModal() {
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.id = 'modalOverlay';
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.id = "modalOverlay";
   overlay.innerHTML = `
     <div class="modal" id="modal" role="dialog" aria-modal="true">
       <div class="modal-header">
@@ -88,47 +104,61 @@ function initModal() {
     </div>
   `;
   document.body.appendChild(overlay);
-  document.getElementById('modalClose').addEventListener('click', closeModal);
-  overlay.addEventListener('click', e => { if (e.target.id === 'modalOverlay') closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e) => {
+    if (e.target.id === "modalOverlay") closeModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
 }
 
 function handleFlyerError(el) {
-  el.parentElement.innerHTML = '<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシ画像を準備中</p></div>';
+  el.parentElement.innerHTML =
+    '<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシ画像を準備中</p></div>';
 }
 
 function openModal(idx) {
   const ev = events[idx];
   const fileId = ev.imgId.trim();
-  const imgUrl = fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200` : null;
-  const dateStr = (ev.end && ev.end !== ev.start) ? `${ev.start}　〜　${ev.end}` : ev.start;
-  const catName  = CONFIG.CATEGORIES[ev.cat] || '';
+  const imgUrl = fileId
+    ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`
+    : null;
+  const dateStr =
+    ev.end && ev.end !== ev.start ? `${ev.start}　〜　${ev.end}` : ev.start;
+  const catName = CONFIG.CATEGORIES[ev.cat] || "";
   const catColor = CAT_COLORS[ev.cat] || CAT_COLORS[0];
-  document.getElementById('modalContent').innerHTML = `
+  document.getElementById("modalContent").innerHTML = `
     <div class="modal-flyer-wrap">
-      ${imgUrl
-        ? `<img class="modal-flyer" src="${imgUrl}" alt="${ev.name}のチラシ" onerror="handleFlyerError(this)">`
-        : `<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシなし</p></div>`}
+      ${
+        imgUrl
+          ? `<img class="modal-flyer" src="${imgUrl}" alt="${ev.name}のチラシ" onerror="handleFlyerError(this)">`
+          : `<div class="modal-flyer-placeholder"><span>🎪</span><p>チラシなし</p></div>`
+      }
     </div>
     <div class="modal-cat-badge" style="background:${catColor}">${catName}</div>
     <h2 class="modal-title">${ev.name}</h2>
     <div class="modal-info-list">
-      ${dateStr ? `<div class="modal-info-row"><span class="modal-label">📅 日程</span><span class="modal-value">${dateStr}</span></div>` : ''}
-      ${ev.time  ? `<div class="modal-info-row"><span class="modal-label">🕐 時間</span><span class="modal-value">${ev.time}</span></div>` : ''}
-      ${ev.place ? `<div class="modal-info-row"><span class="modal-label">📍 会場</span><span class="modal-value">${ev.place}</span></div>` : ''}
+      ${dateStr ? `<div class="modal-info-row"><span class="modal-label">日程</span><span class="modal-value">${dateStr}</span></div>` : ""}
+      ${ev.time ? `<div class="modal-info-row"><span class="modal-label">時間</span><span class="modal-value">${ev.time}</span></div>` : ""}
+      ${ev.place ? `<div class="modal-info-row"><span class="modal-label">会場</span><span class="modal-value">${ev.place}</span></div>` : ""}
     </div>
-    ${ev.desc ? `<div class="modal-divider"></div><p class="modal-desc">${ev.desc}</p>` : ''}
-    ${ev.url && ev.url !== '#' ? `
+    ${ev.desc ? `<div class="modal-divider"></div><p class="modal-desc">${ev.desc}</p>` : ""}
+    ${
+      ev.url && ev.url !== "#"
+        ? `
       <div class="modal-actions">
         <a class="btn-primary" href="${ev.url}" target="_blank" rel="noopener">主催者HPはこちら &rsaquo;</a>
-      </div>` : '<div style="height:1.4rem"></div>'}
+      </div>`
+        : '<div style="height:1.4rem"></div>'
+    }
   `;
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('modal').scrollTop = 0;
+  document.getElementById("modalOverlay").classList.add("open");
+  document.getElementById("modal").scrollTop = 0;
 }
 
 function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
+  document.getElementById("modalOverlay").classList.remove("open");
 }
 
 // ---- データ取得 ----
@@ -151,27 +181,36 @@ function parseCSV(text) {
   for (let i = 1; i < lines.length; i++) {
     const cols = parseCSVLine(lines[i]);
     if (!cols[COL.NAME]) continue;
-    if ((cols[COL.PUB] || '').toUpperCase() !== 'TRUE') continue;
+    if ((cols[COL.PUB] || "").toUpperCase() !== "TRUE") continue;
     result.push({
-      name:  cols[COL.NAME]  || '',
-      start: cols[COL.START] || '',
-      end:   cols[COL.END]   || cols[COL.START] || '',
-      time:  cols[COL.TIME]  || '',
-      place: cols[COL.PLACE] || '',
-      desc:  cols[COL.DESC]  || '',
-      imgId: cols[COL.IMG]   || '',
-      url:   cols[COL.URL]   || '',
-      cat:   Math.min(3, Math.max(0, parseInt(cols[COL.CAT] || '0') || 0)),
+      name: cols[COL.NAME] || "",
+      start: cols[COL.START] || "",
+      end: cols[COL.END] || cols[COL.START] || "",
+      time: cols[COL.TIME] || "",
+      place: cols[COL.PLACE] || "",
+      desc: cols[COL.DESC] || "",
+      imgId: cols[COL.IMG] || "",
+      url: cols[COL.URL] || "",
+      cat: Math.min(3, Math.max(0, parseInt(cols[COL.CAT] || "0") || 0)),
     });
   }
   return result;
 }
 
 function parseCSVLine(line) {
-  const cols = []; let cur = '', inQ = false;
+  const cols = [];
+  let cur = "",
+    inQ = false;
   for (let i = 0; i < line.length; i++) {
-    if (line[i] === '"') { inQ = !inQ; continue; }
-    if (line[i] === ',' && !inQ) { cols.push(cur.trim()); cur = ''; continue; }
+    if (line[i] === '"') {
+      inQ = !inQ;
+      continue;
+    }
+    if (line[i] === "," && !inQ) {
+      cols.push(cur.trim());
+      cur = "";
+      continue;
+    }
     cur += line[i];
   }
   cols.push(cur.trim());
@@ -180,12 +219,12 @@ function parseCSVLine(line) {
 
 function toDate(str) {
   if (!str) return null;
-  return new Date(str.replace(/\//g, '-') + 'T00:00:00');
+  return new Date(str.replace(/\//g, "-") + "T00:00:00");
 }
 
 function getEventsForDay(y, m, d) {
   const target = new Date(y, m, d);
-  return events.filter(ev => {
+  return events.filter((ev) => {
     const s = toDate(ev.start);
     const e = toDate(ev.end) || s;
     return s && target >= s && target <= e;
