@@ -444,10 +444,9 @@ body {
     height: 210%;
   }
 }
-@media (max-width: 959px) {
+@media (min-width: 641px) and (max-width: 959px) {
   .hero {
-    overflow-x: clip;
-    overflow-y: visible;
+    overflow: visible;
   }
 }
 @media (max-width: 768px) {
