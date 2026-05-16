@@ -448,6 +448,7 @@ header.scrolled {
 @media (max-width: 640px) {
   .hero {
     min-height: 80vh;
+    max-height: none !important;
   }
   .hero-img-wrap {
     height: 88vw; 
