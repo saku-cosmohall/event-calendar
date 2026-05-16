@@ -30,6 +30,12 @@ let events = [];
 function initHeader() {
   const header = document.getElementById("siteHeader");
   if (!header) return;
+  if (!document.querySelector('link[href*="font-awesome"]')) {
+    const fa = document.createElement("link");
+    fa.rel = "stylesheet";
+    fa.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css";
+    document.head.appendChild(fa);
+  }
   header.innerHTML = `
     <div class="header-inner">
       <a class="header-brand" href="index.html">
@@ -41,7 +47,10 @@ function initHeader() {
       </a>
       <a class="header-btn" href="calendar.html">
         <span class="header-btn-text">イベントカレンダー &rsaquo;</span>
-        <svg class="header-btn-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="イベントカレンダー"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span class="header-btn-mobile" aria-label="イベントカレンダー">
+          <i class="fa-regular fa-calendar-days" aria-hidden="true"></i>
+          <span class="header-btn-mobile-label">イベント</span>
+        </span>
       </a>
     </div>
   `;
