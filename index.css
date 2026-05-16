@@ -431,7 +431,11 @@ body {
   justify-content: center;
   flex-wrap: wrap;
 }
-
+@media (max-width: 959px) {
+  .hero {
+    overflow: visible;
+  }
+}
 @media (max-width: 768px) {
   .facility-card {
     width: 100%;
