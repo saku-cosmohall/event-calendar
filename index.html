@@ -56,8 +56,19 @@
         /></span>
       </div>
       <div class="hero-img-wrap">
-        <!-- DEBUG: Swiper外して img 1枚で試す -->
-        <img src="images/hero.webp" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" />
+        <div class="swiper hero-circle-swiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <img class="slide-bg" src="images/hero.webp" alt="" />
+            </div>
+            <div class="swiper-slide">
+              <img class="slide-bg" src="images/hero2.webp" alt="" />
+            </div>
+            <div class="swiper-slide">
+              <img class="slide-bg" src="images/hero3.webp" alt="" />
+            </div>
+          </div>
+        </div>
       </div>
       <p class="hero-copy">
         特別な時間も<br />ふだんの時間も<br />たのしく、ゆったりと
@@ -227,10 +238,8 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
       const heroSwiper = new Swiper(".hero-circle-swiper", {
-        effect: "fade",
-        fadeEffect: { crossFade: true },
         loop: true,
-        speed: 1400,
+        speed: 800,
         autoplay: { delay: 5000, disableOnInteraction: false },
       });
     </script>
