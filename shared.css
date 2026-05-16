@@ -402,3 +402,8 @@ header.scrolled {
   .header-btn-text { display: none; }
   .header-btn-icon { display: block; }
 }
+@media (max-width: 500px) {
+  .hero-img-wrap {
+    top: -44vw;
+  }
+}
