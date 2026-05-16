@@ -228,7 +228,7 @@ body {
   position: absolute;
   top: -48vw;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateZ(0);
   right: auto;
   width: 96vw;
   max-width: none;
@@ -237,6 +237,8 @@ body {
   overflow: hidden;
   background: #e8dfd0;
   z-index: 0;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
 }
 
 /* WebP非対応ブラウザ用フォールバック */
@@ -297,7 +299,7 @@ html.no-webp .hero-img-wrap {
     aspect-ratio: 1;
     top: -114%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateZ(0);
     right: auto;
     max-width: none;
   }
