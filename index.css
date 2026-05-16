@@ -250,9 +250,12 @@ body {
 }
 .hero-circle-swiper .slide-bg {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   background-size: cover;
-  background-position: 30% 30vw;
+  background-position: 30% 30%;
 }
 .hero-circle-swiper .swiper-slide-active .slide-bg {
   animation: hero-kenburns 7s ease-out forwards;
@@ -489,5 +492,12 @@ body {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}@media (max-width: 500px) {
+  .hero-img-wrap {
+    top: -36vw !important;
+  }
+  .hero-copy {
+    top: 46vw;
   }
 }
