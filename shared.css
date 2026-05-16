@@ -475,8 +475,6 @@ header.scrolled {
     font-weight: 700;
     letter-spacing: 0.06em;
   }
-}
-@media (max-width: 500px) {
   .hero-img-wrap {
     top: -44vw !important;
   }
