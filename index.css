@@ -165,7 +165,7 @@ body {
 /* ===== HERO ===== */
 .hero {
   position: relative;
-  overflow: hidden;
+  overflow-x: clip;
   min-height: 62vw;
   max-height: 480px;
   display: flex;
