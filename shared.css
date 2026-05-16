@@ -452,6 +452,11 @@ header.scrolled {
   .hero-img-wrap {
     height: 88vw; 
   }
+  .hero-copy {
+    position: absolute !important;
+    top: 50vw;
+    max-width: 90% !important;
+  }
   .modal {
     max-height: 95vh;
   }
@@ -485,5 +490,8 @@ header.scrolled {
 @media (max-width: 500px) {
   .hero-img-wrap {
     top: -44vw !important;
+  }
+  .hero-copy {
+    top: 46vw;
   }
 }
