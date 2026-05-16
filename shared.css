@@ -449,6 +449,9 @@ header.scrolled {
   .hero {
     min-height: 80vh;
   }
+  .hero-img-wrap {
+    height: 88vw; 
+  }
   .modal {
     max-height: 95vh;
   }
