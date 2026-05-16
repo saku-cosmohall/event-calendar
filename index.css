@@ -439,7 +439,10 @@ body {
   justify-content: center;
   flex-wrap: wrap;
 }
-@media (max-width: 959px) {
+@media (min-width: 960px) {
+  .hero-img-wrap {
+    height: 210%;
+  }
 }
 @media (max-width: 768px) {
   .facility-card {
