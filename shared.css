@@ -446,6 +446,9 @@ header.scrolled {
   }
 }
 @media (max-width: 640px) {
+  .hero {
+    max-height: 80vh;
+  }
   .modal {
     max-height: 95vh;
   }
