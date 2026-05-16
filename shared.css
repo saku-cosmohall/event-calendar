@@ -37,6 +37,7 @@ body {
   color: var(--text);
   min-height: 100vh;
   padding-top: 64px;
+  overflow-x: hidden;
 }
 
 /* ===== HEADER ===== */
