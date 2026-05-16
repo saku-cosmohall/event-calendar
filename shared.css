@@ -2,6 +2,10 @@
    shared.css — ヘッダー・フッター・モーダル共通スタイル
    ============================================================ */
 
+html {
+  overflow-x: hidden;
+}
+
 :root {
   --bg: #fff4d6;
   --bg-alt: #f6e27a;
@@ -37,7 +41,6 @@ body {
   color: var(--text);
   min-height: 100vh;
   padding-top: 64px;
-  overflow-x: hidden;
 }
 
 /* ===== HEADER ===== */
@@ -452,7 +455,7 @@ header.scrolled {
     max-height: none !important;
   }
   .hero-img-wrap {
-    height: 88vw; 
+    height: 88vw;
   }
   .hero-copy {
     position: absolute !important;
@@ -487,13 +490,5 @@ header.scrolled {
     font-size: 0.6rem;
     font-weight: 700;
     letter-spacing: 0.06em;
-  }
-}
-@media (max-width: 500px) {
-  .hero-img-wrap {
-    top: -44vw !important;
-  }
-  .hero-copy {
-    top: 46vw;
   }
 }
