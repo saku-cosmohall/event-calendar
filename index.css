@@ -239,6 +239,11 @@ body {
   z-index: 0;
 }
 
+/* WebP非対応ブラウザ用フォールバック */
+html.no-webp .hero-img-wrap {
+  background: linear-gradient(135deg, #c2dfc2, #f5e0ad, #f2baa2);
+}
+
 /* ===== 円内スライダー ===== */
 .hero-circle-swiper {
   width: 100%;
@@ -448,9 +453,6 @@ body {
   }
 }
 @media (min-width: 641px) and (max-width: 959px) {
-  .hero {
-    overflow: visible;
-  }
 }
 @media (max-width: 768px) {
   .facility-card {
