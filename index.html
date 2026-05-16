@@ -12,10 +12,6 @@
     />
     <link rel="stylesheet" href="shared.css" />
     <link rel="stylesheet" href="index.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-    />
   </head>
   <body>
     <!-- デモ用バナー（本番では非表示にする） -->
@@ -56,19 +52,9 @@
         /></span>
       </div>
       <div class="hero-img-wrap">
-        <div class="swiper hero-circle-swiper">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img class="slide-bg" src="images/hero.webp" alt="" />
-            </div>
-            <div class="swiper-slide">
-              <img class="slide-bg" src="images/hero2.webp" alt="" />
-            </div>
-            <div class="swiper-slide">
-              <img class="slide-bg" src="images/hero3.webp" alt="" />
-            </div>
-          </div>
-        </div>
+        <img class="hero-slide" src="images/hero.webp" alt="" />
+        <img class="hero-slide" src="images/hero2.webp" alt="" />
+        <img class="hero-slide" src="images/hero3.webp" alt="" />
       </div>
       <p class="hero-copy">
         特別な時間も<br />ふだんの時間も<br />たのしく、ゆったりと
@@ -235,14 +221,6 @@
     <!-- フッター -->
     <footer class="site-footer" id="siteFooter"></footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-      const heroSwiper = new Swiper(".hero-circle-swiper", {
-        loop: true,
-        speed: 800,
-        autoplay: { delay: 5000, disableOnInteraction: false },
-      });
-    </script>
     <script src="shared.js"></script>
     <script>
       initHeader();
@@ -298,19 +276,14 @@
       // ---- ヒーロークリックでスライダー＆マーキー 一時停止 ----
       const heroDeco = document.querySelector(".hero-deco");
       const heroSection = document.querySelector(".hero");
+      const heroSlides = document.querySelectorAll(".hero-slide");
       let heroPaused = false;
       if (heroSection) {
         heroSection.addEventListener("click", () => {
           heroPaused = !heroPaused;
-          if (heroDeco)
-            heroDeco.style.animationPlayState = heroPaused
-              ? "paused"
-              : "running";
-          if (heroPaused) {
-            heroSwiper.autoplay.stop();
-          } else {
-            heroSwiper.autoplay.start();
-          }
+          const state = heroPaused ? "paused" : "running";
+          if (heroDeco) heroDeco.style.animationPlayState = state;
+          heroSlides.forEach((s) => (s.style.animationPlayState = state));
         });
       }
     </script>
