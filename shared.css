@@ -116,6 +116,7 @@ header.scrolled {
   flex-shrink: 0;
 }
 .header-btn:hover { filter: brightness(0.92); transform: translateY(-1px); }
+.header-btn-icon { display: none; }
 
 /* ===== MODAL ===== */
 .modal-overlay {
@@ -391,6 +392,13 @@ header.scrolled {
     height: 10vw;
   }
   .header-btn {
-    font-size: 14px;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    font-size: 0;
+    letter-spacing: 0;
   }
+  .header-btn-text { display: none; }
+  .header-btn-icon { display: block; }
 }
