@@ -442,7 +442,7 @@ header.scrolled {
   }
   .hero-img-wrap {
     width: 104vw !important;
-    top: -80% !important;
+    top: -40vw !important;
   }
 }
 @media (max-width: 640px) {
@@ -478,6 +478,8 @@ header.scrolled {
     font-weight: 700;
     letter-spacing: 0.06em;
   }
+}
+@media (max-width: 500px) {
   .hero-img-wrap {
     top: -44vw !important;
   }
