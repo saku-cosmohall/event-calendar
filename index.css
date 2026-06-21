@@ -496,4 +496,10 @@ html.no-webp .hero-img-wrap {
   .hero-copy {
     top: 46vw;
   }
+  .facilities-green {
+    border-radius: 50% 50% 50% 50% / 56px 56px 56px 56px;
+  }
+  .facilities-cta {
+    padding: 8rem 1.5rem 3rem;
+  }
 }
