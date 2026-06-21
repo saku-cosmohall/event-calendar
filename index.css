@@ -491,7 +491,7 @@ html.no-webp .hero-img-wrap {
   }
 }@media (max-width: 500px) {
   .hero-img-wrap {
-    top: -36vw !important;
+    top: -32vw !important;
   }
   .hero-copy {
     top: 46vw;
